@@ -1,37 +1,96 @@
+# Системные библиотеки
 import os
-import asyncio
-import logging
 import sys
-import praw
 import random
-import re
-from datetime import datetime, timedelta
+import logging
+import asyncio
 import pytz
-from dotenv import load_dotenv
+from datetime import datetime, timedelta
+
+# Библиотеки для сетевых запросов
+import aiohttp
+import aiofiles
+
+# Библиотеки для Telegram
+import telegram
 from telegram import Update, BotCommand
 from telegram.ext import Application, CommandHandler, CallbackContext, MessageHandler, filters, JobQueue
+from telegram.error import Conflict, RetryAfter, TimedOut
+
+# Библиотеки для Reddit
+import asyncpraw
+import asyncprawcore
+
+# Работа с окружением и логированием
+from dotenv import load_dotenv
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    filename='bot_debug.log',
+    filemode='a'
+)
+logger = logging.getLogger()
 
 # Загрузка переменных окружения
-from dotenv import load_dotenv
-load_dotenv()  # Загружаем переменные из .env
+load_dotenv()
 
 # Точная настройка логирования
-logger = logging.getLogger()
 logger.setLevel(logging.DEBUG)
 logger.handlers.clear()
 
-# Создаем форматтер
+# Консольный вывод логов
+console_handler = logging.StreamHandler(sys.stdout)
+console_handler.setLevel(logging.DEBUG)
 formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+console_handler.setFormatter(formatter)
+logger.addHandler(console_handler)
+
+# Обработка сетевых ошибок Telegram
+async def error_handler(update: object, context: CallbackContext):
+    try:
+        raise context.error
+    except Conflict:
+        logger.error("Конфликт при получении обновлений. Другой экземпляр бота активен.")
+        # Можно добавить логику перезапуска или ожидания
+    except RetryAfter as e:
+        logger.warning(f"Превышен лимит. Ожидание {e.retry_after} секунд.")
+        await asyncio.sleep(e.retry_after)
+    except TimedOut:
+        logger.error("Превышено время ожидания ответа от Telegram.")
+    except Exception as e:
+        logger.error(f"Неизвестная ошибка: {e}", exc_info=True)
+
+# Функция проверки URL
+async def check_url_availability(url):
+    try:
+        async with aiohttp.ClientSession() as session:
+            async with session.head(url, timeout=10) as response:
+                return response.status == 200
+    except Exception as e:
+        logger.error(f"Ошибка проверки URL {url}: {e}")
+        return False
+
+# Работа с окружением и логированием
+from dotenv import load_dotenv
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    filename='bot_debug.log',
+    filemode='a'
+)
+logger = logging.getLogger()
+
+# Загрузка переменных окружения
+load_dotenv()
+
+# Точная настройка логирования
+logger.setLevel(logging.DEBUG)
+logger.handlers.clear()
 
 # Файловый обработчик
 file_handler = logging.FileHandler('bot_debug.log', mode='w', encoding='utf-8')
 file_handler.setLevel(logging.DEBUG)
 file_handler.setFormatter(formatter)
-
-# Консольный обработчик
-console_handler = logging.StreamHandler(sys.stdout)
-console_handler.setLevel(logging.DEBUG)
-console_handler.setFormatter(formatter)
 
 # Добавляем обработчики
 logger.addHandler(file_handler)
@@ -51,146 +110,213 @@ REDDIT_CLIENT_ID = os.getenv('REDDIT_CLIENT_ID')
 REDDIT_CLIENT_SECRET = os.getenv('REDDIT_CLIENT_SECRET')
 REDDIT_USER_AGENT = os.getenv('REDDIT_USER_AGENT')
 
-# Настройка Reddit API
-reddit = praw.Reddit(
-    client_id=REDDIT_CLIENT_ID,
-    client_secret=REDDIT_CLIENT_SECRET,
-    user_agent=REDDIT_USER_AGENT
-)
-
-# Отладочный вывод токена
-print(f"🕹️ Токен бота: {TELEGRAM_TOKEN[:5]}...{TELEGRAM_TOKEN[-5:] if TELEGRAM_TOKEN else 'ТОКЕН НЕ НАЙДЕН'}")
-logger.info(f"Bot token status: {'PRESENT' if TELEGRAM_TOKEN else 'MISSING'}")
-
 # Глобальный список для отслеживания отправленных мемов
 SENT_MEMES = set()
 MAX_SENT_MEMES = 500  # Максимальное количество мемов в истории
 
-def get_random_meme(subreddit_names=None, limit=200):
-    reddit = praw.Reddit(
-        client_id=REDDIT_CLIENT_ID,
-        client_secret=REDDIT_CLIENT_SECRET,
-        user_agent='TelegramMemeBot/1.5'
-    )
-    
-    if not subreddit_names:
-        subreddit_names = [
-            # Мемы
-            'memes', 'dankmemes', 'funny', 'comedyheaven', 
-            'meirl', 'me_irl', '2meirl4meirl', 
-            
-            # Аниме и поп-культура
-            'anime_irl', 'animememes', 'goodanimemes', 
-            'StarWars', 'Marvel', 'marvelstudios', 
-            'gameofthrones', 'rickandmorty', 
-            
-            # Арты и иллюстрации
-            'Art', 'drawing', 'illustration', 
-            'ImaginaryLandscapes', 'ImaginaryCharacters', 
-            'PixelArt', 'conceptart', 
-            
-            # Игры и фандомы
-            'gaming', 'pcmasterrace', 
-            'Genshin_Impact', 'Minecraft', 
-            'LeagueOfMemes', 'DotA2', 
-            
-            # Научпоп и интересное
-            'space', 'science', 'interestingasfuck', 
-            'nextfuckinglevel', 'BeAmazed',
-            
-            # Русскоязычные
-            'ru_memes', 'Pikabu'
-        ]
-    
-    all_memes = []
-    for subreddit_name in subreddit_names:
+async def get_random_meme(subreddit_names=None, limit=200):
+    """
+    Асинхронное получение случайного мема с использованием AsyncPRAW
+    """
+    try:
+        logger.info("🚀 Начало процесса получения мема")
+        
+        # Расширенная диагностика сети
+        import socket
+        import ssl
+        
+        def check_internet_connection():
+            try:
+                # Проверка DNS
+                socket.gethostbyname('www.reddit.com')
+                
+                # Проверка SSL-соединения
+                context = ssl.create_default_context()
+                with socket.create_connection(("www.reddit.com", 443)) as sock:
+                    with context.wrap_socket(sock, server_hostname="www.reddit.com") as secure_sock:
+                        logger.info("✅ Успешное SSL-соединение с Reddit")
+                return True
+            except Exception as e:
+                logger.error(f"❌ Ошибка подключения: {e}")
+                return False
+        
+        if not check_internet_connection():
+            logger.warning("❌ Нет доступа к Reddit")
+            return None
+        
+        # Расширенная отладка Reddit API
+        logger.info(f"Reddit Client ID: {os.getenv('REDDIT_CLIENT_ID', 'НЕ УСТАНОВЛЕН')[:5]}...")
+        logger.info(f"Reddit Client Secret: {'*' * 10}")
+        logger.info(f"Reddit User Agent: {os.getenv('REDDIT_USER_AGENT', 'НЕ УСТАНОВЛЕН')}")
+        
         try:
-            subreddit = reddit.subreddit(subreddit_name)
-            hot_memes = list(subreddit.hot(limit=limit))
-            all_memes.extend(hot_memes)
-        except Exception as e:
-            logger.error(f"Ошибка при получении мемов из {subreddit_name}: {e}")
-    
-    # Фильтрация мемов: только картинки, не отправленные ранее
-    valid_memes = [
-        meme for meme in all_memes 
-        if (meme.url.endswith(('.jpg', '.jpeg', '.png', '.gif')) and 
-            meme.url not in SENT_MEMES)
-    ]
-    
-    if not valid_memes:
-        # Если все мемы были отправлены, очистим историю
-        SENT_MEMES.clear()
+            reddit = asyncpraw.Reddit(
+                client_id=os.getenv('REDDIT_CLIENT_ID'),
+                client_secret=os.getenv('REDDIT_CLIENT_SECRET'),
+                user_agent=os.getenv('REDDIT_USER_AGENT', 'TelegramMemeBot/1.5')
+            )
+        except Exception as auth_error:
+            logger.critical(f"❌ Ошибка аутентификации Reddit: {auth_error}")
+            return None
+        
+        if not subreddit_names:
+            subreddit_names = [
+                'memes', 'dankmemes', 'funny', 'ru_memes', 'Pikabu'
+            ]
+        
+        logger.info(f"Список суб-реддитов для поиска: {subreddit_names}")
+        
+        all_memes = []
+        for subreddit_name in subreddit_names:
+            try:
+                subreddit = await reddit.subreddit(subreddit_name)
+                hot_memes = []
+                async for post in subreddit.hot(limit=limit):
+                    if post.url.endswith(('.jpg', '.jpeg', '.png', '.gif')):
+                        hot_memes.append(post)
+                
+                all_memes.extend(hot_memes)
+                logger.info(f"Получено {len(hot_memes)} мемов из {subreddit_name}")
+            except asyncprawcore.exceptions.Forbidden as forbidden_error:
+                logger.error(f"❌ Доступ запрещен к {subreddit_name}: {forbidden_error}")
+            except asyncprawcore.exceptions.NotFound as not_found_error:
+                logger.error(f"❌ Суб-реддит не найден {subreddit_name}: {not_found_error}")
+            except asyncprawcore.exceptions.RequestException as request_error:
+                logger.error(f"❌ Ошибка запроса к {subreddit_name}: {request_error}")
+            except Exception as e:
+                logger.error(f"❌ Ошибка при получении мемов из {subreddit_name}: {e}", exc_info=True)
+        
+        logger.info(f"Всего собрано мемов: {len(all_memes)}")
+        
         valid_memes = [
             meme for meme in all_memes 
-            if meme.url.endswith(('.jpg', '.jpeg', '.png', '.gif'))
+            if meme.url not in SENT_MEMES
         ]
-    
-    if not valid_memes:
-        logger.warning("Не удалось найти подходящие мемы")
+        
+        logger.info(f"Найдено валидных мемов: {len(valid_memes)}")
+        
+        if not valid_memes:
+            logger.warning("Очистка истории отправленных мемов")
+            SENT_MEMES.clear()
+            valid_memes = all_memes
+        
+        if not valid_memes:
+            logger.warning("❌ Не удалось найти подходящие мемы")
+            return None
+        
+        selected_meme = random.choice(valid_memes)
+        
+        SENT_MEMES.add(selected_meme.url)
+        
+        if len(SENT_MEMES) > MAX_SENT_MEMES:
+            logger.info("Достигнут максимум отправленных мемов, очистка истории")
+            SENT_MEMES.clear()
+        
+        logger.info(f"✅ Выбран мем: {selected_meme.title} из {selected_meme.subreddit}")
+        
+        return {
+            'title': selected_meme.title,
+            'url': selected_meme.url,
+            'author': selected_meme.author,
+            'subreddit': selected_meme.subreddit
+        }
+    except Exception as e:
+        logger.critical(f"❌ Критическая ошибка в get_random_meme: {e}", exc_info=True)
         return None
-    
-    selected_meme = random.choice(valid_memes)
-    
-    # Добавляем мем в список отправленных
-    SENT_MEMES.add(selected_meme.url)
-    
-    # Ограничиваем размер списка отправленных мемов
-    if len(SENT_MEMES) > MAX_SENT_MEMES:
-        # Удаляем старые мемы
-        SENT_MEMES.clear()
-    
-    return {
-        'title': selected_meme.title,
-        'url': selected_meme.url,
-        'author': selected_meme.author.name,
-        'subreddit': selected_meme.subreddit.display_name
-    }
+    finally:
+        # Закрываем сессию Reddit
+        try:
+            await reddit.close()
+        except Exception:
+            pass
 
 async def send_meme_to_channel(context: CallbackContext):
     """
-    Отправка случайного мема в канал
+    Отправка случайного мема в канал с расширенной отладкой
     """
     try:
-        meme = get_random_meme()
+        logger.info("🚀 Начало процесса отправки мема")
+        
+        # Проверка прав доступа к каналу
+        try:
+            channel_info = await context.bot.get_chat(CHANNEL_ID)
+            logger.info(f"Информация о канале: {channel_info}")
+        except Exception as channel_error:
+            logger.error(f"❌ Ошибка получения информации о канале: {channel_error}")
+            return
+        
+        meme = await get_random_meme()
         
         if not meme:
-            logger.warning("Не удалось получить мем")
+            logger.warning("❌ Не удалось получить мем")
             return
         
         caption = f"{meme['title']}\n\nмда, шиз\n@sh1za1337_bot"
         
-        await context.bot.send_photo(
-            chat_id=CHANNEL_ID, 
-            photo=meme['url'], 
-            caption=caption
-        )
-        
-        logger.info(f"Отправлен мем из {meme['subreddit']}")
+        try:
+            logger.info(f"📸 Попытка отправить мем в канал: {CHANNEL_ID}")
+            logger.info(f"🔗 URL мема: {meme['url']}")
+            
+            # Проверка доступности URL-изображения
+            try:
+                async with aiohttp.ClientSession() as session:
+                    async with session.get(meme['url']) as response:
+                        if response.status != 200:
+                            logger.error(f"❌ Недоступное изображение: {meme['url']} (статус: {response.status})")
+                            return
+            except Exception as url_error:
+                logger.error(f"❌ Ошибка проверки URL: {url_error}")
+                return
+            
+            await context.bot.send_photo(
+                chat_id=CHANNEL_ID, 
+                photo=meme['url'], 
+                caption=caption
+            )
+            
+            logger.info(f"✅ Мем успешно отправлен из {meme['subreddit']}")
+        except Exception as send_error:
+            logger.error(f"❌ Ошибка отправки мема в канал: {send_error}")
+            
+            # Попытка отправить в личные сообщения администратора
+            try:
+                admin_id = os.getenv('ADMIN_USER_ID')
+                logger.info(f"📧 Попытка уведомить администратора: {admin_id}")
+                
+                await context.bot.send_message(
+                    chat_id=admin_id, 
+                    text=f"❌ Не удалось отправить мем в канал:\n{send_error}\n\n"
+                         f"Мем: {meme['url']}\n"
+                         f"Суб-реддит: {meme['subreddit']}"
+                )
+            except Exception as admin_error:
+                logger.critical(f"❌ Критическая ошибка уведомления администратора: {admin_error}")
     
     except Exception as e:
-        logger.error(f"Ошибка отправки мема: {e}", exc_info=True)
+        logger.critical(f"❌ Критическая ошибка в send_meme_to_channel: {e}", exc_info=True)
 
 async def start_command(update: Update, context: CallbackContext):
     """
-    Обработчик команды /start
+    Обработчик команды /start с расширенной отладкой
     """
-    print("🔍 Команда /start получена")
-    logger.info("Received /start command")
+    logger.info(f"🔍 Получена команда /start от пользователя: {update.effective_user.id}")
     
     try:
-        # Отладочный вывод типа чата
-        print(f"💬 Тип чата: {update.effective_chat.type}")
-        logger.debug(f"Chat type: {update.effective_chat.type}")
+        # Отладочный вывод всей информации о чате
+        logger.debug(f"Полная информация о чате: {update.effective_chat}")
+        logger.debug(f"Информация о пользователе: {update.effective_user}")
         
-        # Проверяем тип чата
-        if update.effective_chat.type != "private":
-            print("❌ Команда /start только в личных сообщениях")
+        # Проверяем тип чата с логированием
+        chat_type = update.effective_chat.type
+        logger.info(f"Тип чата: {chat_type}")
+        
+        if chat_type != "private":
+            logger.warning(f"Команда /start вне личных сообщений от {update.effective_user.id}")
             await update.message.reply_text("🚫 Команда /start доступна только в личных сообщениях.")
             return
 
         # Отправляем приветственное сообщение
-        user_name = update.effective_user.first_name
+        user_name = update.effective_user.first_name or "Друг"
         start_text = (
             f'👋 Привет, {user_name}!\n\n'
             '🤣 Я бот, который будет присылать мемы.\n\n'
@@ -204,43 +330,80 @@ async def start_command(update: Update, context: CallbackContext):
         )
         
         await update.message.reply_text(start_text)
+        logger.info(f"✅ Приветственное сообщение отправлено пользователю: {update.effective_user.id}")
     
     except Exception as e:
-        print(f"❌ Ошибка в start_command: {e}")
-        logger.error(f"Error in start_command: {e}", exc_info=True)
+        logger.critical(f"❌ Критическая ошибка в start_command для {update.effective_user.id}: {e}", exc_info=True)
+
+def setup_meme_job(application: Application):
+    """
+    Настройка периодической отправки мемов с расширенной отладкой
+    """
+    try:
+        async def send_meme_callback(context: CallbackContext):
+            """
+            Колбэк для отправки мема с логированием
+            """
+            logger.info("🕒 Запуск send_meme_callback для отправки мема")
+            try:
+                await send_meme_to_channel(context)
+                
+                # Планируем следующую отправку с рандомным интервалом
+                interval_hours = random.uniform(1, 4)
+                next_run_time = datetime.now(pytz.utc) + timedelta(hours=interval_hours)
+                
+                context.job_queue.run_once(
+                    send_meme_callback, 
+                    interval_hours * 3600, 
+                    name='send_meme',  
+                    data={'next_run_time': next_run_time}  
+                )
+                
+                logger.info(f"⏰ Следующий мем будет отправлен через {interval_hours:.1f} часов")
+            except Exception as e:
+                logger.error(f"❌ Ошибка в send_meme_callback: {e}", exc_info=True)
+        
+        # Запускаем первую задачу через 10 секунд
+        application.job_queue.run_once(
+            send_meme_callback, 
+            10, 
+            name='send_meme',  
+            data={'next_run_time': datetime.now(pytz.utc) + timedelta(seconds=10)}
+        )
+        
+        logger.info("✅ Джоб для отправки мемов настроен успешно")
+    except Exception as e:
+        logger.critical(f"❌ Ошибка настройки джоба для мемов: {e}", exc_info=True)
 
 async def help_command(update: Update, context: CallbackContext):
     """
     Обработчик команды /help
     """
-    print("🔍 Команда /help получена")
     logger.info("Received /help command")
     
     try:
         # Отладочный вывод типа чата
-        print(f"💬 Тип чата: {update.effective_chat.type}")
         logger.debug(f"Chat type: {update.effective_chat.type}")
         
         # Проверяем тип чата
         if update.effective_chat.type != "private":
-            print("❌ Команда /help только в личных сообщениях")
-            await update.message.reply_text("🚫 Команда /help доступна только в личных сообщениях.")
+            logger.warning("Command /help only in private messages")
+            await update.message.reply_text("🚫 Command /help is only available in private messages.")
             return
 
         help_text = (
-            '📋 Список команд:\n\n'
-            '🤖 /start - Запуск бота\n'
-            '🤣 /meme - Получить случайный мем\n'
-            '📋 /help - Список всех команд\n'
-            '🌐 /about - Информация о боте\n'
-            '📊 /stats - Статистика мемов\n\n'
-            '🖼️ Отправь картинку боту - опубликовать мем в канале'
+            '📋 List of commands:\n\n'
+            '🤖 /start - Start the bot\n'
+            '🤣 /meme - Get a random meme\n'
+            '📋 /help - List of all commands\n'
+            '🌐 /about - Information about the bot\n'
+            '📊 /stats - Meme statistics\n\n'
+            f'🖼️ Memes are published in the channel: {CHANNEL_ID}'
         )
         
         await update.message.reply_text(help_text)
     
     except Exception as e:
-        print(f"❌ Ошибка в help_command: {e}")
         logger.error(f"Error in help_command: {e}", exc_info=True)
 
 async def about_command(update: Update, context: CallbackContext):
@@ -294,29 +457,26 @@ async def stats_command(update: Update, context: CallbackContext):
     """
     Обработчик команды /stats
     """
-    print("🔍 Команда /stats получена")
     logger.info("Received /stats command")
     
     try:
         # Отладочный вывод типа чата
-        print(f"💬 Тип чата: {update.effective_chat.type}")
         logger.debug(f"Chat type: {update.effective_chat.type}")
         
         # Проверяем тип чата
         if update.effective_chat.type != "private":
-            print("❌ Команда /stats только в личных сообщениях")
-            await update.message.reply_text("🚫 Команда /stats доступна только в личных сообщениях.")
+            logger.warning("Command /stats only in private messages")
+            await update.message.reply_text("🚫 Command /stats is only available in private messages.")
             return
 
         # Отправляем статистику
         await update.message.reply_text(
-            "📊 Статистика мемов:\n\n"
-            "🚧 Функция статистики в разработке\n"
-            "🤖 Бот находится в стадии тестирования"
+            "📊 Meme statistics:\n\n"
+            "🚧 Functionality in development\n"
+            "🤖 Bot is in testing stage"
         )
     
     except Exception as e:
-        print(f"❌ Ошибка в stats_command: {e}")
         logger.error(f"Error in stats_command: {e}", exc_info=True)
 
 async def meme_command(update: Update, context: CallbackContext):
@@ -324,7 +484,7 @@ async def meme_command(update: Update, context: CallbackContext):
     Команда /meme для получения случайного мема
     """
     try:
-        meme = get_random_meme()
+        meme = await get_random_meme()
         
         if not meme:
             await update.message.reply_text("😱 Не удалось получить мем")
@@ -347,7 +507,6 @@ async def handle_command(update: Update, context: CallbackContext):
     """
     Универсальный обработчик неизвестных команд
     """
-    print("🔍 Получена неизвестная команда")
     logger.info(f"Unhandled command from {update.effective_user}")
     
     try:
@@ -356,7 +515,6 @@ async def handle_command(update: Update, context: CallbackContext):
         )
     
     except Exception as e:
-        print(f"❌ Ошибка в handle_command: {e}")
         logger.error(f"Error in handle_command: {e}", exc_info=True)
 
 async def handle_user_meme(update: Update, context: CallbackContext):
@@ -413,14 +571,13 @@ async def handle_user_meme(update: Update, context: CallbackContext):
 
 async def time_command(update: Update, context: CallbackContext):
     """
-    Команда /time для получения времени до следующего мема
+    Команда /time для получения времени до следующего мема с расширенной отладкой
     """
     logger.info(f"Вызов /time от пользователя {update.effective_user.username} (ID: {update.effective_user.id})")
     
     try:
         # Проверяем, что команда от администратора
         if str(update.effective_user.id) != os.getenv('ADMIN_USER_ID'):
-            # Страшное предупреждение
             warning_message = (
                 "⚠️ ВНИМАНИЕ! НЕСАНКЦИОНИРОВАННАЯ ПОПЫТКА ДОСТУПА! ⚠️\n\n"
                 "🔒 Эта команда строго конфиденциальна и предназначена ТОЛЬКО для администратора.\n"
@@ -429,7 +586,6 @@ async def time_command(update: Update, context: CallbackContext):
                 "🚨 НЕМЕДЛЕННО ПРЕКРАТИТЕ ПОПЫТКИ НЕСАНКЦИОНИРОВАННОГО ДОСТУПА! 🚨"
             )
             
-            # Логирование попытки несанкционированного доступа
             logger.warning(
                 f"ВНИМАНИЕ! Несанкционированная попытка доступа к /time. "
                 f"Пользователь: {update.effective_user.username} "
@@ -441,22 +597,27 @@ async def time_command(update: Update, context: CallbackContext):
         
         logger.info(f"Администратор {update.effective_user.username} вызвал /time")
         
-        # Получаем список задач
-        jobs = context.job_queue.jobs()
-        
         # Находим задачу отправки мема
+        jobs = context.job_queue.jobs()
         meme_job = next((job for job in jobs if job.name == 'send_meme'), None)
         
         if meme_job:
-            # Вычисляем оставшееся время
-            remaining_time = meme_job.next_run_time - datetime.now(pytz.utc)
+            # Получаем время следующего запуска из данных джоба
+            next_run_time = meme_job.data.get('next_run_time') if meme_job.data else datetime.now(pytz.utc)
             
-            # Форматируем сообщение
+            # Вычисляем оставшееся время
+            remaining_time = next_run_time - datetime.now(pytz.utc)
+            
+            # Форматируем сообщение с более подробной информацией
+            hours, remainder = divmod(remaining_time.total_seconds(), 3600)
+            minutes, seconds = divmod(remainder, 60)
+            
             message = (
                 f"⏰ До следующего мема:\n"
-                f"🕒 Осталось: {remaining_time}\n"
-                f"🔜 Следующая отправка: {meme_job.next_run_time.astimezone(pytz.timezone('Europe/Moscow'))}"
+                f"🕒 Осталось: {int(hours)} ч. {int(minutes)} мин. {int(seconds)} сек.\n"
+                f"🔜 Следующая отправка: {next_run_time.astimezone(pytz.timezone('Europe/Moscow'))}"
             )
+            
             logger.info(f"Отправка времени следующего мема: {message}")
             await update.message.reply_text(message)
         else:
@@ -476,7 +637,6 @@ async def gomeme_command(update: Update, context: CallbackContext):
     try:
         # Проверяем, что команда от администратора
         if str(update.effective_user.id) != os.getenv('ADMIN_USER_ID'):
-            # Страшное предупреждение
             warning_message = (
                 "⚠️ ВНИМАНИЕ! НЕСАНКЦИОНИРОВАННАЯ ПОПЫТКА ДОСТУПА! ⚠️\n\n"
                 "🔒 Эта команда строго конфиденциальна и предназначена ТОЛЬКО для администратора.\n"
@@ -485,7 +645,6 @@ async def gomeme_command(update: Update, context: CallbackContext):
                 "🚨 НЕМЕДЛЕННО ПРЕКРАТИТЕ ПОПЫТКИ НЕСАНКЦИОНИРОВАННОГО ДОСТУПА! 🚨"
             )
             
-            # Логирование попытки несанкционированного доступа
             logger.warning(
                 f"ВНИМАНИЕ! Несанкционированная попытка доступа к /gomeme. "
                 f"Пользователь: {update.effective_user.username} "
@@ -510,100 +669,62 @@ async def gomeme_command(update: Update, context: CallbackContext):
         logger.error(f"Ошибка в команде /gomeme: {e}", exc_info=True)
         await update.message.reply_text("❌ Не удалось отправить мем")
 
-def setup_meme_job(application: Application):
-    """
-    Настройка периодической отправки мемов со случайным интервалом
-    """
-    try:
-        # Создаем функцию для отправки мема
-        async def send_meme_callback(context: CallbackContext):
-            await send_meme_to_channel(context)
-            
-            # Планируем следующую отправку с рандомным интервалом
-            interval_hours = random.uniform(1, 4)
-            context.job_queue.run_once(send_meme_callback, interval_hours * 3600)
-            
-            logger.info(f"Следующий мем будет отправлен через {interval_hours:.1f} часов")
-        
-        # Запускаем первую задачу через 10 секунд
-        application.job_queue.run_once(send_meme_callback, 10)
-        
-        logger.info("Джоб для отправки мемов настроен успешно")
-    except Exception as e:
-        logger.error(f"Ошибка настройки джоба для мемов: {e}", exc_info=True)
-
 def main():
     """
     Основная функция для запуска бота
     """
-    print("🚀 Запуск бота...")
-    logger.info("Telegram Bot starting...")
-
-    if not TELEGRAM_TOKEN:
-        logger.critical("❌ Telegram bot token is missing! Please set TELEGRAM_TOKEN in .env")
-        sys.exit(1)
-
-    # Создаем приложение
     try:
-        # Включаем максимально подробное логирование для библиотек
-        logging.getLogger('telegram').setLevel(logging.DEBUG)
-        logging.getLogger('httpx').setLevel(logging.DEBUG)
-        logging.getLogger('httpcore').setLevel(logging.DEBUG)
-
+        logger.info("🤖 Инициализация бота...")
+        
+        # Проверка токена
+        if not TELEGRAM_TOKEN:
+            logger.critical("❌ TELEGRAM_TOKEN не установлен!")
+            raise ValueError("Токен Telegram не найден")
+        
+        logger.info("Bot token status: PRESENT")
+        logger.info("Telegram Bot starting...")
+        
+        # Создание приложения
         application = (
             Application.builder()
             .token(TELEGRAM_TOKEN)
-            .get_updates_read_timeout(30)
-            .get_updates_write_timeout(30)
-            .get_updates_connect_timeout(30)
-            .job_queue(JobQueue())  # Добавляем job queue
             .build()
         )
-        logger.info(f"✅ Приложение создано с токеном: {TELEGRAM_TOKEN[:5]}...")
-    except Exception as e:
-        logger.critical(f"❌ Ошибка создания приложения: {e}", exc_info=True)
-        sys.exit(1)
-
-    # Регистрируем обработчики команд
-    application.add_handler(CommandHandler("start", start_command))
-    application.add_handler(CommandHandler("help", help_command))
-    application.add_handler(CommandHandler("about", about_command))
-    application.add_handler(CommandHandler("stats", stats_command))
-    application.add_handler(CommandHandler("meme", meme_command))
-    application.add_handler(CommandHandler('time', time_command))
-    application.add_handler(CommandHandler('gomeme', gomeme_command))
-    application.add_handler(MessageHandler(filters.COMMAND, handle_command))
-    application.add_handler(MessageHandler(filters.PHOTO, handle_user_meme))
-
-    # Устанавливаем команды меню
-    commands = [
-        BotCommand("start", "Запуск бота"),
-        BotCommand("meme", "Получить случайный мем"),
-        BotCommand("help", "Список всех команд"),
-        BotCommand("about", "Информация о боте"),
-        BotCommand("stats", "Статистика мемов"),
-        BotCommand("time", "Время до следующего мема"),
-        BotCommand("gomeme", "Принудительная отправка мема")
-    ]
-
-    setup_meme_job(application)
-
-    # Запускаем бота
-    print("🤖 Бот запускается...")
-    logger.info("🚀 Начало polling...")
-    
-    try:
-        # Используем блокирующий запуск с максимально подробным логированием
+        
+        logger.info(f"✅ Приложение создано с токеном: {TELEGRAM_TOKEN[:10]}...")
+        
+        # Регистрация команд
+        application.add_handler(CommandHandler('start', start_command))
+        application.add_handler(CommandHandler('help', help_command))
+        application.add_handler(CommandHandler('about', about_command))
+        application.add_handler(CommandHandler('stats', stats_command))
+        application.add_handler(CommandHandler('meme', meme_command))
+        application.add_handler(CommandHandler('time', time_command))
+        application.add_handler(CommandHandler('gomeme', gomeme_command))
+        
+        # Обработчик неизвестных команд
+        application.add_handler(MessageHandler(filters.COMMAND, handle_command))
+        
+        # Обработчик пользовательских мемов
+        application.add_handler(MessageHandler(filters.PHOTO, handle_user_meme))
+        
+        # Настройка джоба для отправки мемов
+        setup_meme_job(application)
+        
+        # Обработчик ошибок
+        application.add_error_handler(error_handler)
+        
+        logger.info("🚀 Начало polling...")
+        
+        # Запуск бота
         application.run_polling(
-            drop_pending_updates=True, 
-            read_timeout=30,
-            write_timeout=30,
-            connect_timeout=30,
-            poll_interval=1.0  # Увеличиваем частоту опроса
+            drop_pending_updates=True,
+            stop_signals=None
         )
+    
     except Exception as e:
         logger.critical(f"❌ Критическая ошибка при запуске бота: {e}", exc_info=True)
-        print(f"❌ Критическая ошибка: {e}")
+        raise
 
 if __name__ == '__main__':
     try:
