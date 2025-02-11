@@ -62,59 +62,90 @@ reddit = praw.Reddit(
 print(f"🕹️ Токен бота: {TELEGRAM_TOKEN[:5]}...{TELEGRAM_TOKEN[-5:] if TELEGRAM_TOKEN else 'ТОКЕН НЕ НАЙДЕН'}")
 logger.info(f"Bot token status: {'PRESENT' if TELEGRAM_TOKEN else 'MISSING'}")
 
+# Глобальный список для отслеживания отправленных мемов
+SENT_MEMES = set()
+MAX_SENT_MEMES = 500  # Максимальное количество мемов в истории
+
 def get_random_meme(subreddit_names=None, limit=200):
-    """
-    Получение случайного мема
-    """
-    if subreddit_names is None:
+    reddit = praw.Reddit(
+        client_id=REDDIT_CLIENT_ID,
+        client_secret=REDDIT_CLIENT_SECRET,
+        user_agent='TelegramMemeBot/1.5'
+    )
+    
+    if not subreddit_names:
         subreddit_names = [
-            'ru_memes', 'memes', 'dankmemes', 'funny', 
-            'anime_irl', 'hornymemes', 'Warhammer40k', 
-            'animememes', 'waifuism', 'grimdank'
+            # Мемы
+            'memes', 'dankmemes', 'funny', 'comedyheaven', 
+            'meirl', 'me_irl', '2meirl4meirl', 
+            
+            # Аниме и поп-культура
+            'anime_irl', 'animememes', 'goodanimemes', 
+            'StarWars', 'Marvel', 'marvelstudios', 
+            'gameofthrones', 'rickandmorty', 
+            
+            # Арты и иллюстрации
+            'Art', 'drawing', 'illustration', 
+            'ImaginaryLandscapes', 'ImaginaryCharacters', 
+            'PixelArt', 'conceptart', 
+            
+            # Игры и фандомы
+            'gaming', 'pcmasterrace', 
+            'Genshin_Impact', 'Minecraft', 
+            'LeagueOfMemes', 'DotA2', 
+            
+            # Научпоп и интересное
+            'space', 'science', 'interestingasfuck', 
+            'nextfuckinglevel', 'BeAmazed',
+            
+            # Русскоязычные
+            'ru_memes', 'Pikabu'
         ]
     
-    try:
-        all_memes = []
-        
-        # Собираем мемы из разных сабреддитов
-        for subreddit_name in subreddit_names:
-            try:
-                subreddit = reddit.subreddit(subreddit_name)
-                memes = list(subreddit.hot(limit=limit//len(subreddit_names)))
-                
-                # Фильтрация мемов (только картинки)
-                filtered_memes = [
-                    meme for meme in memes 
-                    if (meme.url.endswith(('.jpg', '.png', '.jpeg', '.gif')) 
-                        and not meme.over_18
-                    )
-                ]
-                
-                all_memes.extend(filtered_memes)
-            
-            except Exception as e:
-                logger.warning(f"Ошибка при получении мемов из {subreddit_name}: {e}")
-        
-        if not all_memes:
-            logger.warning("Не найдено подходящих мемов")
-            return None
-        
-        # Выбираем мем с учетом вероятностного отбора
-        selected_meme = random.choices(
-            all_memes[:50],  # Берем топ-50 мемов
-            weights=[1 / (i + 1) for i in range(50)]  # Вероятность выбора уменьшается
-        )[0]
-        
-        return {
-            'title': selected_meme.title,
-            'url': selected_meme.url,
-            'author': selected_meme.author.name,
-            'subreddit': selected_meme.subreddit.display_name
-        }
+    all_memes = []
+    for subreddit_name in subreddit_names:
+        try:
+            subreddit = reddit.subreddit(subreddit_name)
+            hot_memes = list(subreddit.hot(limit=limit))
+            all_memes.extend(hot_memes)
+        except Exception as e:
+            logger.error(f"Ошибка при получении мемов из {subreddit_name}: {e}")
     
-    except Exception as e:
-        logger.error(f"Ошибка получения мема: {e}", exc_info=True)
+    # Фильтрация мемов: только картинки, не отправленные ранее
+    valid_memes = [
+        meme for meme in all_memes 
+        if (meme.url.endswith(('.jpg', '.jpeg', '.png', '.gif')) and 
+            meme.url not in SENT_MEMES)
+    ]
+    
+    if not valid_memes:
+        # Если все мемы были отправлены, очистим историю
+        SENT_MEMES.clear()
+        valid_memes = [
+            meme for meme in all_memes 
+            if meme.url.endswith(('.jpg', '.jpeg', '.png', '.gif'))
+        ]
+    
+    if not valid_memes:
+        logger.warning("Не удалось найти подходящие мемы")
         return None
+    
+    selected_meme = random.choice(valid_memes)
+    
+    # Добавляем мем в список отправленных
+    SENT_MEMES.add(selected_meme.url)
+    
+    # Ограничиваем размер списка отправленных мемов
+    if len(SENT_MEMES) > MAX_SENT_MEMES:
+        # Удаляем старые мемы
+        SENT_MEMES.clear()
+    
+    return {
+        'title': selected_meme.title,
+        'url': selected_meme.url,
+        'author': selected_meme.author.name,
+        'subreddit': selected_meme.subreddit.display_name
+    }
 
 async def send_meme_to_channel(context: CallbackContext):
     """
@@ -380,6 +411,105 @@ async def handle_user_meme(update: Update, context: CallbackContext):
         logger.error(f"❌ Ошибка при публикации пользовательского мема: {e}", exc_info=True)
         await update.message.reply_text("😱 Произошла ошибка при публикации мема")
 
+async def time_command(update: Update, context: CallbackContext):
+    """
+    Команда /time для получения времени до следующего мема
+    """
+    logger.info(f"Вызов /time от пользователя {update.effective_user.username} (ID: {update.effective_user.id})")
+    
+    try:
+        # Проверяем, что команда от администратора
+        if str(update.effective_user.id) != os.getenv('ADMIN_USER_ID'):
+            # Страшное предупреждение
+            warning_message = (
+                "⚠️ ВНИМАНИЕ! НЕСАНКЦИОНИРОВАННАЯ ПОПЫТКА ДОСТУПА! ⚠️\n\n"
+                "🔒 Эта команда строго конфиденциальна и предназначена ТОЛЬКО для администратора.\n"
+                "👀 Все ваши действия ЛОГИРУЮТСЯ и будут НЕМЕДЛЕННО ДОЛОЖЕНЫ.\n"
+                "💀 Повторные попытки могут привести к БЛОКИРОВКЕ и УГОЛОВНОЙ ОТВЕТСТВЕННОСТИ!\n\n"
+                "🚨 НЕМЕДЛЕННО ПРЕКРАТИТЕ ПОПЫТКИ НЕСАНКЦИОНИРОВАННОГО ДОСТУПА! 🚨"
+            )
+            
+            # Логирование попытки несанкционированного доступа
+            logger.warning(
+                f"ВНИМАНИЕ! Несанкционированная попытка доступа к /time. "
+                f"Пользователь: {update.effective_user.username} "
+                f"(ID: {update.effective_user.id})"
+            )
+            
+            await update.message.reply_text(warning_message)
+            return
+        
+        logger.info(f"Администратор {update.effective_user.username} вызвал /time")
+        
+        # Получаем список задач
+        jobs = context.job_queue.jobs()
+        
+        # Находим задачу отправки мема
+        meme_job = next((job for job in jobs if job.name == 'send_meme'), None)
+        
+        if meme_job:
+            # Вычисляем оставшееся время
+            remaining_time = meme_job.next_run_time - datetime.now(pytz.utc)
+            
+            # Форматируем сообщение
+            message = (
+                f"⏰ До следующего мема:\n"
+                f"🕒 Осталось: {remaining_time}\n"
+                f"🔜 Следующая отправка: {meme_job.next_run_time.astimezone(pytz.timezone('Europe/Moscow'))}"
+            )
+            logger.info(f"Отправка времени следующего мема: {message}")
+            await update.message.reply_text(message)
+        else:
+            logger.warning("Задача отправки мемов не найдена")
+            await update.message.reply_text("❌ Задача отправки мемов не найдена")
+    
+    except Exception as e:
+        logger.error(f"Ошибка в команде /time: {e}", exc_info=True)
+        await update.message.reply_text("❌ Произошла ошибка при получении времени")
+
+async def gomeme_command(update: Update, context: CallbackContext):
+    """
+    Команда /gomeme для принудительной отправки мема и обновления расписания
+    """
+    logger.info(f"Вызов /gomeme от пользователя {update.effective_user.username} (ID: {update.effective_user.id})")
+    
+    try:
+        # Проверяем, что команда от администратора
+        if str(update.effective_user.id) != os.getenv('ADMIN_USER_ID'):
+            # Страшное предупреждение
+            warning_message = (
+                "⚠️ ВНИМАНИЕ! НЕСАНКЦИОНИРОВАННАЯ ПОПЫТКА ДОСТУПА! ⚠️\n\n"
+                "🔒 Эта команда строго конфиденциальна и предназначена ТОЛЬКО для администратора.\n"
+                "👀 Все ваши действия ЛОГИРУЮТСЯ и будут НЕМЕДЛЕННО ДОЛОЖЕНЫ.\n"
+                "💀 Повторные попытки могут привести к БЛОКИРОВКЕ и УГОЛОВНОЙ ОТВЕТСТВЕННОСТИ!\n\n"
+                "🚨 НЕМЕДЛЕННО ПРЕКРАТИТЕ ПОПЫТКИ НЕСАНКЦИОНИРОВАННОГО ДОСТУПА! 🚨"
+            )
+            
+            # Логирование попытки несанкционированного доступа
+            logger.warning(
+                f"ВНИМАНИЕ! Несанкционированная попытка доступа к /gomeme. "
+                f"Пользователь: {update.effective_user.username} "
+                f"(ID: {update.effective_user.id})"
+            )
+            
+            await update.message.reply_text(warning_message)
+            return
+        
+        logger.info(f"Администратор {update.effective_user.username} вызвал /gomeme")
+        
+        # Отправляем мем в канал
+        await send_meme_to_channel(context)
+        
+        # Перепланируем следующую отправку
+        setup_meme_job(context.application)
+        
+        logger.info("Мем отправлен, расписание обновлено")
+        await update.message.reply_text("✅ Мем отправлен. Расписание обновлено.")
+    
+    except Exception as e:
+        logger.error(f"Ошибка в команде /gomeme: {e}", exc_info=True)
+        await update.message.reply_text("❌ Не удалось отправить мем")
+
 def setup_meme_job(application: Application):
     """
     Настройка периодической отправки мемов со случайным интервалом
@@ -440,6 +570,8 @@ def main():
     application.add_handler(CommandHandler("about", about_command))
     application.add_handler(CommandHandler("stats", stats_command))
     application.add_handler(CommandHandler("meme", meme_command))
+    application.add_handler(CommandHandler('time', time_command))
+    application.add_handler(CommandHandler('gomeme', gomeme_command))
     application.add_handler(MessageHandler(filters.COMMAND, handle_command))
     application.add_handler(MessageHandler(filters.PHOTO, handle_user_meme))
 
@@ -449,7 +581,9 @@ def main():
         BotCommand("meme", "Получить случайный мем"),
         BotCommand("help", "Список всех команд"),
         BotCommand("about", "Информация о боте"),
-        BotCommand("stats", "Статистика мемов")
+        BotCommand("stats", "Статистика мемов"),
+        BotCommand("time", "Время до следующего мема"),
+        BotCommand("gomeme", "Принудительная отправка мема")
     ]
 
     setup_meme_job(application)
