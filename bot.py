@@ -159,16 +159,20 @@ async def start_command(update: Update, context: CallbackContext):
             return
 
         # Отправляем приветственное сообщение
-        await update.message.reply_text(
-            f"👋 Привет, {update.effective_user.first_name}!\n\n"
-            "🤣 Я бот, который будет присылать мемы.\n\n"
-            "📋 Доступные команды:\n"
-            "• /start - Запуск бота\n"
-            "• /meme - Получить случайный мем\n"
-            "• /help - Список всех команд\n"
-            "• /about - Информация о боте\n"
-            "• /stats - Статистика мемов"
+        user_name = update.effective_user.first_name
+        start_text = (
+            f'👋 Привет, {user_name}!\n\n'
+            '🤣 Я бот, который будет присылать мемы.\n\n'
+            '📋 Доступные команды:\n'
+            '• /start - Запуск бота\n'
+            '• /meme - Получить случайный мем\n'
+            '• /help - Список всех команд\n'
+            '• /about - Информация о боте\n'
+            '• /stats - Статистика мемов\n\n'
+            f'🚀 Мемы публикуются в канале: {CHANNEL_ID}'
         )
+        
+        await update.message.reply_text(start_text)
     
     except Exception as e:
         print(f"❌ Ошибка в start_command: {e}")
@@ -192,15 +196,17 @@ async def help_command(update: Update, context: CallbackContext):
             await update.message.reply_text("🚫 Команда /help доступна только в личных сообщениях.")
             return
 
-        # Отправляем справку
-        await update.message.reply_text(
-            "📋 Список команд:\n\n"
-            "🤖 /start - Запуск бота\n"
-            "🤣 /meme - Получить случайный мем\n"
-            "📋 /help - Список всех команд\n"
-            "🌐 /about - Информация о боте\n"
-            "📊 /stats - Статистика мемов"
+        help_text = (
+            '📋 Список команд:\n\n'
+            '🤖 /start - Запуск бота\n'
+            '🤣 /meme - Получить случайный мем\n'
+            '📋 /help - Список всех команд\n'
+            '🌐 /about - Информация о боте\n'
+            '📊 /stats - Статистика мемов\n\n'
+            '🖼️ Отправь картинку боту - опубликовать мем в канале'
         )
+        
+        await update.message.reply_text(help_text)
     
     except Exception as e:
         print(f"❌ Ошибка в help_command: {e}")
@@ -322,6 +328,58 @@ async def handle_command(update: Update, context: CallbackContext):
         print(f"❌ Ошибка в handle_command: {e}")
         logger.error(f"Error in handle_command: {e}", exc_info=True)
 
+async def handle_user_meme(update: Update, context: CallbackContext):
+    """
+    Обработчик для пользовательских мемов
+    Принимает картинку от пользователя и публикует её в канале
+    """
+    try:
+        # Проверяем, что это изображение
+        if not update.message.photo:
+            await update.message.reply_text("❌ Пожалуйста, отправь мем в виде изображения")
+            return
+        
+        # Получаем последнее (самое большое) изображение
+        photo = update.message.photo[-1]
+        file = await context.bot.get_file(photo.file_id)
+        
+        # Получаем информацию об отправителе
+        sender = update.effective_user
+        sender_name = sender.username or f"{sender.first_name} {sender.last_name}".strip()
+        
+        # Формируем подпись с учетом текста, если он есть
+        caption_parts = []
+        caption_parts.append(f"Додумался @{sender_name}")
+        
+        # Добавляем текст к картинке, если он есть
+        if update.message.caption:
+            caption_parts.append(f"\n{update.message.caption}")
+        
+        # Добавляем стандартные теги
+        caption_parts.extend([
+            "\nмда, шиз",
+            "@sh1za1337_bot"
+        ])
+        
+        # Объединяем части подписи
+        caption = "\n".join(caption_parts)
+        
+        # Отправляем мем в канал
+        await context.bot.send_photo(
+            chat_id=CHANNEL_ID, 
+            photo=file.file_id, 
+            caption=caption
+        )
+        
+        # Уведомляем пользователя об успешной отправке
+        await update.message.reply_text("✅ Мем опубликован в канале!")
+        
+        logger.info(f"Пользовательский мем от {sender_name} опубликован в канале")
+    
+    except Exception as e:
+        logger.error(f"❌ Ошибка при публикации пользовательского мема: {e}", exc_info=True)
+        await update.message.reply_text("😱 Произошла ошибка при публикации мема")
+
 def setup_meme_job(application: Application):
     """
     Настройка периодической отправки мемов со случайным интервалом
@@ -383,10 +441,11 @@ def main():
     application.add_handler(CommandHandler("stats", stats_command))
     application.add_handler(CommandHandler("meme", meme_command))
     application.add_handler(MessageHandler(filters.COMMAND, handle_command))
+    application.add_handler(MessageHandler(filters.PHOTO, handle_user_meme))
 
     # Устанавливаем команды меню
     commands = [
-        BotCommand("start", "Запуск бота и приветствие"),
+        BotCommand("start", "Запуск бота"),
         BotCommand("meme", "Получить случайный мем"),
         BotCommand("help", "Список всех команд"),
         BotCommand("about", "Информация о боте"),
