@@ -1,223 +1,61 @@
-2025-02-12 02:40:14,412 - root - INFO - 🤖 Инициализация бота...
-2025-02-12 02:40:14,412 - root - INFO - Bot token status: PRESENT
-2025-02-12 02:40:14,413 - root - INFO - Telegram Bot starting...
-2025-02-12 02:40:15,328 - root - INFO - ✅ Приложение создано с токеном: 7679123098...
-2025-02-12 02:40:15,329 - apscheduler.scheduler - INFO - Adding job tentatively -- it will be properly scheduled when the scheduler starts
-2025-02-12 02:40:15,330 - root - INFO - ✅ Джоб для отправки мемов настроен успешно
-2025-02-12 02:40:15,330 - root - INFO - 🚀 Начало polling...
-2025-02-12 02:40:15,330 - asyncio - DEBUG - Using proactor: IocpProactor
-2025-02-12 02:40:17,354 - apscheduler.scheduler - INFO - Added job "send_meme" to job store "default"
-2025-02-12 02:40:17,354 - apscheduler.scheduler - INFO - Scheduler started
-2025-02-12 02:40:17,354 - apscheduler.scheduler - DEBUG - Looking for jobs to run
-2025-02-12 02:40:17,354 - apscheduler.scheduler - DEBUG - Next wakeup is due at 2025-02-11 21:40:25.328960+00:00 (in 7.974106 seconds)
-2025-02-12 02:40:22,150 - root - ERROR - Неизвестная ошибка: httpx.ReadError: 
-Traceback (most recent call last):
-  File "C:\Users\Sp1Dpwnz\AppData\Local\Programs\Python\Python313\Lib\site-packages\httpx\_transports\default.py", line 101, in map_httpcore_exceptions
-    yield
-  File "C:\Users\Sp1Dpwnz\AppData\Local\Programs\Python\Python313\Lib\site-packages\httpx\_transports\default.py", line 394, in handle_async_request
-    resp = await self._pool.handle_async_request(req)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\Sp1Dpwnz\AppData\Local\Programs\Python\Python313\Lib\site-packages\httpcore\_async\connection_pool.py", line 256, in handle_async_request
-    raise exc from None
-  File "C:\Users\Sp1Dpwnz\AppData\Local\Programs\Python\Python313\Lib\site-packages\httpcore\_async\connection_pool.py", line 236, in handle_async_request
-    response = await connection.handle_async_request(
-               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-        pool_request.request
-        ^^^^^^^^^^^^^^^^^^^^
-    )
-    ^
-  File "C:\Users\Sp1Dpwnz\AppData\Local\Programs\Python\Python313\Lib\site-packages\httpcore\_async\connection.py", line 103, in handle_async_request
-    return await self._connection.handle_async_request(request)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\Sp1Dpwnz\AppData\Local\Programs\Python\Python313\Lib\site-packages\httpcore\_async\http11.py", line 136, in handle_async_request
-    raise exc
-  File "C:\Users\Sp1Dpwnz\AppData\Local\Programs\Python\Python313\Lib\site-packages\httpcore\_async\http11.py", line 106, in handle_async_request
-    ) = await self._receive_response_headers(**kwargs)
-        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\Sp1Dpwnz\AppData\Local\Programs\Python\Python313\Lib\site-packages\httpcore\_async\http11.py", line 177, in _receive_response_headers
-    event = await self._receive_event(timeout=timeout)
-            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\Sp1Dpwnz\AppData\Local\Programs\Python\Python313\Lib\site-packages\httpcore\_async\http11.py", line 217, in _receive_event
-    data = await self._network_stream.read(
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-        self.READ_NUM_BYTES, timeout=timeout
-        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    )
-    ^
-  File "C:\Users\Sp1Dpwnz\AppData\Local\Programs\Python\Python313\Lib\site-packages\httpcore\_backends\anyio.py", line 32, in read
-    with map_exceptions(exc_map):
-         ~~~~~~~~~~~~~~^^^^^^^^^
-  File "C:\Users\Sp1Dpwnz\AppData\Local\Programs\Python\Python313\Lib\contextlib.py", line 162, in __exit__
-    self.gen.throw(value)
-    ~~~~~~~~~~~~~~^^^^^^^
-  File "C:\Users\Sp1Dpwnz\AppData\Local\Programs\Python\Python313\Lib\site-packages\httpcore\_exceptions.py", line 14, in map_exceptions
-    raise to_exc(exc) from exc
-httpcore.ReadError
-
-The above exception was the direct cause of the following exception:
-
-Traceback (most recent call last):
-  File "C:\Users\Sp1Dpwnz\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\request\_httpxrequest.py", line 293, in do_request
-    res = await self._client.request(
-          ^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    ...<6 lines>...
-    )
-    ^
-  File "C:\Users\Sp1Dpwnz\AppData\Local\Programs\Python\Python313\Lib\site-packages\httpx\_client.py", line 1540, in request
-    return await self.send(request, auth=auth, follow_redirects=follow_redirects)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\Sp1Dpwnz\AppData\Local\Programs\Python\Python313\Lib\site-packages\httpx\_client.py", line 1629, in send
-    response = await self._send_handling_auth(
-               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    ...<4 lines>...
-    )
-    ^
-  File "C:\Users\Sp1Dpwnz\AppData\Local\Programs\Python\Python313\Lib\site-packages\httpx\_client.py", line 1657, in _send_handling_auth
-    response = await self._send_handling_redirects(
-               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    ...<3 lines>...
-    )
-    ^
-  File "C:\Users\Sp1Dpwnz\AppData\Local\Programs\Python\Python313\Lib\site-packages\httpx\_client.py", line 1694, in _send_handling_redirects
-    response = await self._send_single_request(request)
-               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\Sp1Dpwnz\AppData\Local\Programs\Python\Python313\Lib\site-packages\httpx\_client.py", line 1730, in _send_single_request
-    response = await transport.handle_async_request(request)
-               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\Sp1Dpwnz\AppData\Local\Programs\Python\Python313\Lib\site-packages\httpx\_transports\default.py", line 393, in handle_async_request
-    with map_httpcore_exceptions():
-         ~~~~~~~~~~~~~~~~~~~~~~~^^
-  File "C:\Users\Sp1Dpwnz\AppData\Local\Programs\Python\Python313\Lib\contextlib.py", line 162, in __exit__
-    self.gen.throw(value)
-    ~~~~~~~~~~~~~~^^^^^^^
-  File "C:\Users\Sp1Dpwnz\AppData\Local\Programs\Python\Python313\Lib\site-packages\httpx\_transports\default.py", line 118, in map_httpcore_exceptions
-    raise mapped_exc(message) from exc
-httpx.ReadError
-
-The above exception was the direct cause of the following exception:
-
-Traceback (most recent call last):
-  File "E:\nsdape\telegrammbot\bot.py", line 51, in error_handler
-    raise context.error
-  File "C:\Users\Sp1Dpwnz\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\ext\_updater.py", line 750, in _network_loop_retry
-    if not await do_action():
-           ^^^^^^^^^^^^^^^^^
-  File "C:\Users\Sp1Dpwnz\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\ext\_updater.py", line 744, in do_action
-    return action_cb_task.result()
-           ~~~~~~~~~~~~~~~~~~~~~^^
-  File "C:\Users\Sp1Dpwnz\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\ext\_updater.py", line 371, in polling_action_cb
-    updates = await self.bot.get_updates(
-              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    ...<7 lines>...
-    )
-    ^
-  File "C:\Users\Sp1Dpwnz\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\ext\_extbot.py", line 650, in get_updates
-    updates = await super().get_updates(
-              ^^^^^^^^^^^^^^^^^^^^^^^^^^
-    ...<9 lines>...
-    )
-    ^
-  File "C:\Users\Sp1Dpwnz\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\_bot.py", line 4480, in get_updates
-    await self._post(
-    ^^^^^^^^^^^^^^^^^
-    ...<7 lines>...
-    ),
-    ^
-  File "C:\Users\Sp1Dpwnz\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\_bot.py", line 619, in _post
-    return await self._do_post(
-           ^^^^^^^^^^^^^^^^^^^^
-    ...<6 lines>...
-    )
-    ^
-  File "C:\Users\Sp1Dpwnz\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\ext\_extbot.py", line 354, in _do_post
-    return await super()._do_post(
-           ^^^^^^^^^^^^^^^^^^^^^^^
-    ...<6 lines>...
-    )
-    ^
-  File "C:\Users\Sp1Dpwnz\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\_bot.py", line 648, in _do_post
-    result = await request.post(
-             ^^^^^^^^^^^^^^^^^^^
-    ...<6 lines>...
-    )
-    ^
-  File "C:\Users\Sp1Dpwnz\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\request\_baserequest.py", line 202, in post
-    result = await self._request_wrapper(
-             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    ...<7 lines>...
-    )
-    ^
-  File "C:\Users\Sp1Dpwnz\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\request\_baserequest.py", line 334, in _request_wrapper
-    code, payload = await self.do_request(
-                    ^^^^^^^^^^^^^^^^^^^^^^
-    ...<7 lines>...
-    )
-    ^
-  File "C:\Users\Sp1Dpwnz\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\request\_httpxrequest.py", line 317, in do_request
-    raise NetworkError(f"httpx.{err.__class__.__name__}: {err}") from err
-telegram.error.NetworkError: httpx.ReadError: 
-2025-02-12 02:40:25,332 - apscheduler.scheduler - DEBUG - Looking for jobs to run
-2025-02-12 02:40:25,332 - apscheduler.scheduler - INFO - Removed job c734d2d64cdb457f9cc5b79c39b8664a
-2025-02-12 02:40:25,333 - apscheduler.scheduler - DEBUG - No jobs; waiting until a job is added
-2025-02-12 02:40:25,333 - apscheduler.executors.default - INFO - Running job "send_meme (trigger: date[2025-02-11 21:40:25 UTC], next run at: 2025-02-11 21:40:25 UTC)" (scheduled at 2025-02-11 21:40:25.328960+00:00)
-2025-02-12 02:40:25,333 - root - INFO - 🕒 Запуск send_meme_callback для отправки мема
-2025-02-12 02:40:25,333 - root - INFO - 🚀 Начало процесса отправки мема
-2025-02-12 02:40:25,745 - root - INFO - Информация о канале: ChatFullInfo(accent_color_id=5, active_usernames=('Sp1DShiz',), api_kwargs={'can_send_gift': True}, can_send_paid_media=True, description='Not SABE Person \nNot SANE Person\nSad Pain 1 more Depression', has_protected_content=True, has_visible_history=True, id=-1002394808904, invite_link='https://t.me/+I4ROzSsdl7M5ZTMy', linked_chat_id=-1002494962209, max_reaction_count=11, photo=ChatPhoto(big_file_id='AQADAgADH-AxG3VvuUkACAMAA7gNnZwW____N9lGK-xXuhQ2BA', big_file_unique_id='AQADH-AxG3VvuUkB', small_file_id='AQADAgADH-AxG3VvuUkACAIAA7gNnZwW____N9lGK-xXuhQ2BA', small_file_unique_id='AQADH-AxG3VvuUkAAQ'), pinned_message=Message(channel_chat_created=False, chat=Chat(id=-1002394808904, title='шиза', type=<ChatType.CHANNEL>, username='Sp1DShiz'), date=datetime.datetime(2024, 11, 14, 9, 47, 23, tzinfo=datetime.timezone.utc), delete_chat_photo=False, edit_date=datetime.datetime(2024, 11, 15, 18, 21, 48, tzinfo=datetime.timezone.utc), group_chat_created=False, has_protected_content=True, message_id=3, sender_chat=Chat(id=-1002394808904, title='шиза', type=<ChatType.CHANNEL>, username='Sp1DShiz'), supergroup_chat_created=False, text='Ну а хули у всех есть и у меня будет только хуй я че выкладывать буду'), title='шиза', type=<ChatType.CHANNEL>, username='Sp1DShiz')
-2025-02-12 02:40:25,745 - root - INFO - 🚀 Начало процесса получения мема
-2025-02-12 02:40:26,216 - root - INFO - ✅ Успешное SSL-соединение с Reddit
-2025-02-12 02:40:26,219 - root - INFO - Reddit Client ID: 1f0se...
-2025-02-12 02:40:26,219 - root - INFO - Reddit Client Secret: **********
-2025-02-12 02:40:26,219 - root - INFO - Reddit User Agent: python:telegram_reddit_bot:1.0 (by /u/major_sh1za)
-2025-02-12 02:40:26,220 - root - INFO - Список суб-реддитов для поиска: ['memes', 'dankmemes', 'funny', 'ru_memes', 'Pikabu']
-2025-02-12 02:40:26,221 - asyncprawcore - DEBUG - Fetching: GET https://oauth.reddit.com/r/memes/hot at 1739310026.221309
-2025-02-12 02:40:26,221 - asyncprawcore - DEBUG - Data: None
-2025-02-12 02:40:26,222 - asyncprawcore - DEBUG - Params: {'limit': '200', 'raw_json': '1'}
-2025-02-12 02:40:28,456 - asyncprawcore - DEBUG - Response: 200 (52208 bytes) (rst-572:rem-999.0:used-1 ratelimit) at 1739310028.4561343
-2025-02-12 02:40:28,577 - asyncprawcore - DEBUG - Fetching: GET https://oauth.reddit.com/r/memes/hot at 1739310028.5771325
-2025-02-12 02:40:28,577 - asyncprawcore - DEBUG - Data: None
-2025-02-12 02:40:28,577 - asyncprawcore - DEBUG - Params: {'after': 't3_1im4ped', 'limit': '200', 'raw_json': '1'}
-2025-02-12 02:40:30,225 - asyncprawcore - DEBUG - Response: 200 (48696 bytes) (rst-570:rem-998.0:used-2 ratelimit) at 1739310030.2250109
-2025-02-12 02:40:30,327 - root - INFO - Получено 192 мемов из memes
-2025-02-12 02:40:30,328 - asyncprawcore - DEBUG - Fetching: GET https://oauth.reddit.com/r/dankmemes/hot at 1739310030.3282347
-2025-02-12 02:40:30,328 - asyncprawcore - DEBUG - Data: None
-2025-02-12 02:40:30,328 - asyncprawcore - DEBUG - Params: {'limit': '200', 'raw_json': '1'}
-2025-02-12 02:40:31,585 - asyncprawcore - DEBUG - Response: 200 (57983 bytes) (rst-569:rem-997.0:used-3 ratelimit) at 1739310031.5859337
-2025-02-12 02:40:31,716 - asyncprawcore - DEBUG - Fetching: GET https://oauth.reddit.com/r/dankmemes/hot at 1739310031.716135
-2025-02-12 02:40:31,716 - asyncprawcore - DEBUG - Data: None
-2025-02-12 02:40:31,717 - asyncprawcore - DEBUG - Params: {'after': 't3_1iltyac', 'limit': '200', 'raw_json': '1'}
-2025-02-12 02:40:33,002 - asyncprawcore - DEBUG - Response: 200 (58835 bytes) (rst-567:rem-996.0:used-4 ratelimit) at 1739310033.0028427
-2025-02-12 02:40:33,132 - root - INFO - Получено 198 мемов из dankmemes
-2025-02-12 02:40:33,132 - asyncprawcore - DEBUG - Fetching: GET https://oauth.reddit.com/r/funny/hot at 1739310033.132868
-2025-02-12 02:40:33,133 - asyncprawcore - DEBUG - Data: None
-2025-02-12 02:40:33,133 - asyncprawcore - DEBUG - Params: {'limit': '200', 'raw_json': '1'}
-2025-02-12 02:40:34,619 - asyncprawcore - DEBUG - Response: 200 (69766 bytes) (rst-566:rem-995.0:used-5 ratelimit) at 1739310034.619903
-2025-02-12 02:40:34,650 - asyncprawcore - DEBUG - Fetching: GET https://oauth.reddit.com/r/funny/hot at 1739310034.6500366
-2025-02-12 02:40:34,650 - asyncprawcore - DEBUG - Data: None
-2025-02-12 02:40:34,650 - asyncprawcore - DEBUG - Params: {'after': 't3_1imnf0s', 'limit': '200', 'raw_json': '1'}
-2025-02-12 02:40:37,023 - asyncprawcore - DEBUG - Response: 200 (67258 bytes) (rst-564:rem-994.0:used-6 ratelimit) at 1739310037.023936
-2025-02-12 02:40:37,053 - root - INFO - Получено 110 мемов из funny
-2025-02-12 02:40:37,053 - asyncprawcore - DEBUG - Fetching: GET https://oauth.reddit.com/r/ru_memes/hot at 1739310037.0539272
-2025-02-12 02:40:37,054 - asyncprawcore - DEBUG - Data: None
-2025-02-12 02:40:37,054 - asyncprawcore - DEBUG - Params: {'limit': '200', 'raw_json': '1'}
-2025-02-12 02:40:37,505 - asyncprawcore - DEBUG - Response: 200 (9120 bytes) (rst-562:rem-993.0:used-7 ratelimit) at 1739310037.5050745
-2025-02-12 02:40:37,507 - root - INFO - Получено 17 мемов из ru_memes
-2025-02-12 02:40:37,508 - asyncprawcore - DEBUG - Fetching: GET https://oauth.reddit.com/r/Pikabu/hot at 1739310037.508132
-2025-02-12 02:40:37,508 - asyncprawcore - DEBUG - Data: None
-2025-02-12 02:40:37,508 - asyncprawcore - DEBUG - Params: {'limit': '200', 'raw_json': '1'}
-2025-02-12 02:40:40,544 - asyncprawcore - DEBUG - Response: 200 (115023 bytes) (rst-562:rem-992.0:used-8 ratelimit) at 1739310040.544757
-2025-02-12 02:40:40,690 - asyncprawcore - DEBUG - Fetching: GET https://oauth.reddit.com/r/Pikabu/hot at 1739310040.690728
-2025-02-12 02:40:40,691 - asyncprawcore - DEBUG - Data: None
-2025-02-12 02:40:40,691 - asyncprawcore - DEBUG - Params: {'after': 't3_1ilf96c', 'limit': '200', 'raw_json': '1'}
-2025-02-12 02:40:43,424 - asyncprawcore - DEBUG - Response: 200 (132703 bytes) (rst-558:rem-991.0:used-9 ratelimit) at 1739310043.424893
-2025-02-12 02:40:43,646 - root - INFO - Получено 83 мемов из Pikabu
-2025-02-12 02:40:43,647 - root - INFO - Всего собрано мемов: 600
-2025-02-12 02:40:43,648 - root - INFO - Найдено валидных мемов: 600
-2025-02-12 02:40:43,651 - root - INFO - ✅ Выбран мем: me whenever I have a crisis из memes
-2025-02-12 02:40:43,652 - root - INFO - 📸 Попытка отправить мем в канал: @Sp1DShiz
-2025-02-12 02:40:43,653 - root - INFO - 🔗 URL мема: https://i.redd.it/qu2gqrlgwdie1.jpeg
-2025-02-12 02:40:44,474 - root - INFO - ✅ Мем успешно отправлен из memes
-2025-02-12 02:40:44,474 - apscheduler.scheduler - INFO - Added job "send_meme" to job store "default"
-2025-02-12 02:40:44,476 - root - INFO - ⏰ Следующий мем будет отправлен через 2.8 часов
-2025-02-12 02:40:44,478 - apscheduler.scheduler - DEBUG - Looking for jobs to run
-2025-02-12 02:40:44,479 - apscheduler.scheduler - DEBUG - Next wakeup is due at 2025-02-12 00:25:49.532705+00:00 (in 9905.053365 seconds)
-2025-02-12 02:40:44,481 - apscheduler.executors.default - INFO - Job "send_meme (trigger: date[2025-02-11 21:40:25 UTC], next run at: 2025-02-11 21:40:25 UTC)" executed successfully
+2025-02-12 17:45:01,631 - root - INFO - 🤖 Инициализация бота...
+2025-02-12 17:45:01,631 - root - INFO - Bot token status: PRESENT
+2025-02-12 17:45:01,631 - root - INFO - Telegram Bot starting...
+2025-02-12 17:45:02,445 - root - INFO - ✅ Приложение создано с токеном: 7679123098...
+2025-02-12 17:45:02,446 - root - INFO - 🚀 Начало polling...
+2025-02-12 17:45:02,446 - asyncio - DEBUG - Using proactor: IocpProactor
+2025-02-12 17:45:03,450 - apscheduler.scheduler - INFO - Scheduler started
+2025-02-12 17:45:03,451 - apscheduler.scheduler - DEBUG - Looking for jobs to run
+2025-02-12 17:45:03,452 - apscheduler.scheduler - DEBUG - No jobs; waiting until a job is added
+2025-02-12 17:45:51,172 - root - INFO - 🚀 Начало процесса получения мема
+2025-02-12 17:45:52,204 - root - INFO - ✅ Успешное SSL-соединение с Reddit
+2025-02-12 17:45:52,206 - root - INFO - Reddit Client ID: 1f0se...
+2025-02-12 17:45:52,206 - root - INFO - Reddit Client Secret: **********
+2025-02-12 17:45:52,206 - root - INFO - Reddit User Agent: python:telegram_reddit_bot:1.0 (by /u/major_sh1za)
+2025-02-12 17:45:52,208 - root - INFO - Список суб-реддитов для поиска: ['memes', 'dankmemes', 'funny', 'ru_memes', 'Pikabu']
+2025-02-12 17:45:52,209 - asyncprawcore - DEBUG - Fetching: GET https://oauth.reddit.com/r/memes/hot at 1739364352.2095118
+2025-02-12 17:45:52,210 - asyncprawcore - DEBUG - Data: None
+2025-02-12 17:45:52,210 - asyncprawcore - DEBUG - Params: {'limit': '200', 'raw_json': '1'}
+2025-02-12 17:45:55,192 - asyncprawcore - DEBUG - Response: 200 (51152 bytes) (rst-245:rem-999.0:used-1 ratelimit) at 1739364355.1921167
+2025-02-12 17:45:55,804 - asyncprawcore - DEBUG - Fetching: GET https://oauth.reddit.com/r/memes/hot at 1739364355.8041167
+2025-02-12 17:45:55,804 - asyncprawcore - DEBUG - Data: None
+2025-02-12 17:45:55,804 - asyncprawcore - DEBUG - Params: {'after': 't3_1imq8tw', 'limit': '200', 'raw_json': '1'}
+2025-02-12 17:45:56,969 - asyncprawcore - DEBUG - Response: 200 (52018 bytes) (rst-243:rem-998.0:used-2 ratelimit) at 1739364356.9699547
+2025-02-12 17:45:57,253 - root - INFO - Получено 190 мемов из memes
+2025-02-12 17:45:57,254 - asyncprawcore - DEBUG - Fetching: GET https://oauth.reddit.com/r/dankmemes/hot at 1739364357.2541838
+2025-02-12 17:45:57,254 - asyncprawcore - DEBUG - Data: None
+2025-02-12 17:45:57,254 - asyncprawcore - DEBUG - Params: {'limit': '200', 'raw_json': '1'}
+2025-02-12 17:45:58,702 - asyncprawcore - DEBUG - Response: 200 (57436 bytes) (rst-242:rem-997.0:used-3 ratelimit) at 1739364358.7023232
+2025-02-12 17:45:58,955 - asyncprawcore - DEBUG - Fetching: GET https://oauth.reddit.com/r/dankmemes/hot at 1739364358.955917
+2025-02-12 17:45:58,956 - asyncprawcore - DEBUG - Data: None
+2025-02-12 17:45:58,956 - asyncprawcore - DEBUG - Params: {'after': 't3_1ilwwyq', 'limit': '200', 'raw_json': '1'}
+2025-02-12 17:46:00,303 - asyncprawcore - DEBUG - Response: 200 (58240 bytes) (rst-240:rem-996.0:used-4 ratelimit) at 1739364360.3032653
+2025-02-12 17:46:00,507 - root - INFO - Получено 198 мемов из dankmemes
+2025-02-12 17:46:00,508 - asyncprawcore - DEBUG - Fetching: GET https://oauth.reddit.com/r/funny/hot at 1739364360.5084465
+2025-02-12 17:46:00,508 - asyncprawcore - DEBUG - Data: None
+2025-02-12 17:46:00,508 - asyncprawcore - DEBUG - Params: {'limit': '200', 'raw_json': '1'}
+2025-02-12 17:46:02,227 - asyncprawcore - DEBUG - Response: 200 (69854 bytes) (rst-238:rem-995.0:used-5 ratelimit) at 1739364362.2279742
+2025-02-12 17:46:02,546 - asyncprawcore - DEBUG - Fetching: GET https://oauth.reddit.com/r/funny/hot at 1739364362.5464754
+2025-02-12 17:46:02,547 - asyncprawcore - DEBUG - Data: None
+2025-02-12 17:46:02,547 - asyncprawcore - DEBUG - Params: {'after': 't3_1iloddv', 'limit': '200', 'raw_json': '1'}
+2025-02-12 17:46:04,518 - asyncprawcore - DEBUG - Response: 200 (67126 bytes) (rst-236:rem-994.0:used-6 ratelimit) at 1739364364.518766
+2025-02-12 17:46:05,073 - root - INFO - Получено 111 мемов из funny
+2025-02-12 17:46:05,073 - asyncprawcore - DEBUG - Fetching: GET https://oauth.reddit.com/r/ru_memes/hot at 1739364365.0737286
+2025-02-12 17:46:05,074 - asyncprawcore - DEBUG - Data: None
+2025-02-12 17:46:05,074 - asyncprawcore - DEBUG - Params: {'limit': '200', 'raw_json': '1'}
+2025-02-12 17:46:05,537 - asyncprawcore - DEBUG - Response: 200 (9115 bytes) (rst-234:rem-993.0:used-7 ratelimit) at 1739364365.5377784
+2025-02-12 17:46:05,561 - root - INFO - Получено 17 мемов из ru_memes
+2025-02-12 17:46:05,561 - asyncprawcore - DEBUG - Fetching: GET https://oauth.reddit.com/r/Pikabu/hot at 1739364365.5615551
+2025-02-12 17:46:05,562 - asyncprawcore - DEBUG - Data: None
+2025-02-12 17:46:05,562 - asyncprawcore - DEBUG - Params: {'limit': '200', 'raw_json': '1'}
+2025-02-12 17:46:08,141 - asyncprawcore - DEBUG - Response: 200 (104376 bytes) (rst-233:rem-992.0:used-8 ratelimit) at 1739364368.1418111
+2025-02-12 17:46:08,641 - asyncprawcore - DEBUG - Fetching: GET https://oauth.reddit.com/r/Pikabu/hot at 1739364368.641044
+2025-02-12 17:46:08,641 - asyncprawcore - DEBUG - Data: None
+2025-02-12 17:46:08,641 - asyncprawcore - DEBUG - Params: {'after': 't3_1ilkmbp', 'limit': '200', 'raw_json': '1'}
+2025-02-12 17:46:11,523 - asyncprawcore - DEBUG - Response: 200 (134170 bytes) (rst-230:rem-991.0:used-9 ratelimit) at 1739364371.523625
+2025-02-12 17:46:12,276 - root - INFO - Получено 83 мемов из Pikabu
+2025-02-12 17:46:12,276 - root - INFO - Всего собрано мемов: 599
+2025-02-12 17:46:12,277 - root - INFO - Найдено валидных мемов: 599
+2025-02-12 17:46:12,279 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): translate.google.com:443
+2025-02-12 17:46:13,431 - urllib3.connectionpool - DEBUG - https://translate.google.com:443 "GET /m?tl=ru&sl=auto&q=Always+a+classic+for+the+Big+Game. HTTP/1.1" 200 None
+2025-02-12 17:46:14,658 - root - INFO - ✅ Выбран мем: Неизменная классика Большой Игры. из memes
