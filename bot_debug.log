@@ -1,61 +1,211 @@
-2025-02-12 17:45:01,631 - root - INFO - 🤖 Инициализация бота...
-2025-02-12 17:45:01,631 - root - INFO - Bot token status: PRESENT
-2025-02-12 17:45:01,631 - root - INFO - Telegram Bot starting...
-2025-02-12 17:45:02,445 - root - INFO - ✅ Приложение создано с токеном: 7679123098...
-2025-02-12 17:45:02,446 - root - INFO - 🚀 Начало polling...
-2025-02-12 17:45:02,446 - asyncio - DEBUG - Using proactor: IocpProactor
-2025-02-12 17:45:03,450 - apscheduler.scheduler - INFO - Scheduler started
-2025-02-12 17:45:03,451 - apscheduler.scheduler - DEBUG - Looking for jobs to run
-2025-02-12 17:45:03,452 - apscheduler.scheduler - DEBUG - No jobs; waiting until a job is added
-2025-02-12 17:45:51,172 - root - INFO - 🚀 Начало процесса получения мема
-2025-02-12 17:45:52,204 - root - INFO - ✅ Успешное SSL-соединение с Reddit
-2025-02-12 17:45:52,206 - root - INFO - Reddit Client ID: 1f0se...
-2025-02-12 17:45:52,206 - root - INFO - Reddit Client Secret: **********
-2025-02-12 17:45:52,206 - root - INFO - Reddit User Agent: python:telegram_reddit_bot:1.0 (by /u/major_sh1za)
-2025-02-12 17:45:52,208 - root - INFO - Список суб-реддитов для поиска: ['memes', 'dankmemes', 'funny', 'ru_memes', 'Pikabu']
-2025-02-12 17:45:52,209 - asyncprawcore - DEBUG - Fetching: GET https://oauth.reddit.com/r/memes/hot at 1739364352.2095118
-2025-02-12 17:45:52,210 - asyncprawcore - DEBUG - Data: None
-2025-02-12 17:45:52,210 - asyncprawcore - DEBUG - Params: {'limit': '200', 'raw_json': '1'}
-2025-02-12 17:45:55,192 - asyncprawcore - DEBUG - Response: 200 (51152 bytes) (rst-245:rem-999.0:used-1 ratelimit) at 1739364355.1921167
-2025-02-12 17:45:55,804 - asyncprawcore - DEBUG - Fetching: GET https://oauth.reddit.com/r/memes/hot at 1739364355.8041167
-2025-02-12 17:45:55,804 - asyncprawcore - DEBUG - Data: None
-2025-02-12 17:45:55,804 - asyncprawcore - DEBUG - Params: {'after': 't3_1imq8tw', 'limit': '200', 'raw_json': '1'}
-2025-02-12 17:45:56,969 - asyncprawcore - DEBUG - Response: 200 (52018 bytes) (rst-243:rem-998.0:used-2 ratelimit) at 1739364356.9699547
-2025-02-12 17:45:57,253 - root - INFO - Получено 190 мемов из memes
-2025-02-12 17:45:57,254 - asyncprawcore - DEBUG - Fetching: GET https://oauth.reddit.com/r/dankmemes/hot at 1739364357.2541838
-2025-02-12 17:45:57,254 - asyncprawcore - DEBUG - Data: None
-2025-02-12 17:45:57,254 - asyncprawcore - DEBUG - Params: {'limit': '200', 'raw_json': '1'}
-2025-02-12 17:45:58,702 - asyncprawcore - DEBUG - Response: 200 (57436 bytes) (rst-242:rem-997.0:used-3 ratelimit) at 1739364358.7023232
-2025-02-12 17:45:58,955 - asyncprawcore - DEBUG - Fetching: GET https://oauth.reddit.com/r/dankmemes/hot at 1739364358.955917
-2025-02-12 17:45:58,956 - asyncprawcore - DEBUG - Data: None
-2025-02-12 17:45:58,956 - asyncprawcore - DEBUG - Params: {'after': 't3_1ilwwyq', 'limit': '200', 'raw_json': '1'}
-2025-02-12 17:46:00,303 - asyncprawcore - DEBUG - Response: 200 (58240 bytes) (rst-240:rem-996.0:used-4 ratelimit) at 1739364360.3032653
-2025-02-12 17:46:00,507 - root - INFO - Получено 198 мемов из dankmemes
-2025-02-12 17:46:00,508 - asyncprawcore - DEBUG - Fetching: GET https://oauth.reddit.com/r/funny/hot at 1739364360.5084465
-2025-02-12 17:46:00,508 - asyncprawcore - DEBUG - Data: None
-2025-02-12 17:46:00,508 - asyncprawcore - DEBUG - Params: {'limit': '200', 'raw_json': '1'}
-2025-02-12 17:46:02,227 - asyncprawcore - DEBUG - Response: 200 (69854 bytes) (rst-238:rem-995.0:used-5 ratelimit) at 1739364362.2279742
-2025-02-12 17:46:02,546 - asyncprawcore - DEBUG - Fetching: GET https://oauth.reddit.com/r/funny/hot at 1739364362.5464754
-2025-02-12 17:46:02,547 - asyncprawcore - DEBUG - Data: None
-2025-02-12 17:46:02,547 - asyncprawcore - DEBUG - Params: {'after': 't3_1iloddv', 'limit': '200', 'raw_json': '1'}
-2025-02-12 17:46:04,518 - asyncprawcore - DEBUG - Response: 200 (67126 bytes) (rst-236:rem-994.0:used-6 ratelimit) at 1739364364.518766
-2025-02-12 17:46:05,073 - root - INFO - Получено 111 мемов из funny
-2025-02-12 17:46:05,073 - asyncprawcore - DEBUG - Fetching: GET https://oauth.reddit.com/r/ru_memes/hot at 1739364365.0737286
-2025-02-12 17:46:05,074 - asyncprawcore - DEBUG - Data: None
-2025-02-12 17:46:05,074 - asyncprawcore - DEBUG - Params: {'limit': '200', 'raw_json': '1'}
-2025-02-12 17:46:05,537 - asyncprawcore - DEBUG - Response: 200 (9115 bytes) (rst-234:rem-993.0:used-7 ratelimit) at 1739364365.5377784
-2025-02-12 17:46:05,561 - root - INFO - Получено 17 мемов из ru_memes
-2025-02-12 17:46:05,561 - asyncprawcore - DEBUG - Fetching: GET https://oauth.reddit.com/r/Pikabu/hot at 1739364365.5615551
-2025-02-12 17:46:05,562 - asyncprawcore - DEBUG - Data: None
-2025-02-12 17:46:05,562 - asyncprawcore - DEBUG - Params: {'limit': '200', 'raw_json': '1'}
-2025-02-12 17:46:08,141 - asyncprawcore - DEBUG - Response: 200 (104376 bytes) (rst-233:rem-992.0:used-8 ratelimit) at 1739364368.1418111
-2025-02-12 17:46:08,641 - asyncprawcore - DEBUG - Fetching: GET https://oauth.reddit.com/r/Pikabu/hot at 1739364368.641044
-2025-02-12 17:46:08,641 - asyncprawcore - DEBUG - Data: None
-2025-02-12 17:46:08,641 - asyncprawcore - DEBUG - Params: {'after': 't3_1ilkmbp', 'limit': '200', 'raw_json': '1'}
-2025-02-12 17:46:11,523 - asyncprawcore - DEBUG - Response: 200 (134170 bytes) (rst-230:rem-991.0:used-9 ratelimit) at 1739364371.523625
-2025-02-12 17:46:12,276 - root - INFO - Получено 83 мемов из Pikabu
-2025-02-12 17:46:12,276 - root - INFO - Всего собрано мемов: 599
-2025-02-12 17:46:12,277 - root - INFO - Найдено валидных мемов: 599
-2025-02-12 17:46:12,279 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): translate.google.com:443
-2025-02-12 17:46:13,431 - urllib3.connectionpool - DEBUG - https://translate.google.com:443 "GET /m?tl=ru&sl=auto&q=Always+a+classic+for+the+Big+Game. HTTP/1.1" 200 None
-2025-02-12 17:46:14,658 - root - INFO - ✅ Выбран мем: Неизменная классика Большой Игры. из memes
+2025-02-14 20:25:52,334 - root - INFO - 🤖 Инициализация бота...
+2025-02-14 20:25:52,336 - root - INFO - Bot token status: PRESENT
+2025-02-14 20:25:52,337 - root - INFO - Telegram Bot starting...
+2025-02-14 20:25:52,338 - asyncio - DEBUG - Using proactor: IocpProactor
+2025-02-14 20:25:52,425 - root - INFO - ✅ Приложение создано с токеном: 7679123098...
+2025-02-14 20:25:52,428 - root - INFO - 🚀 Начало polling...
+2025-02-14 20:25:56,010 - apscheduler.scheduler - INFO - Scheduler started
+2025-02-14 20:25:56,011 - apscheduler.scheduler - DEBUG - Looking for jobs to run
+2025-02-14 20:25:56,012 - apscheduler.scheduler - DEBUG - No jobs; waiting until a job is added
+2025-02-14 20:26:01,132 - root - INFO - 🚀 Начало процесса получения мема
+2025-02-14 20:26:03,010 - root - INFO - ✅ Успешное SSL-соединение с Reddit
+2025-02-14 20:26:03,011 - root - INFO - Reddit Client ID: 1f0se...
+2025-02-14 20:26:03,012 - root - INFO - Reddit Client Secret: **********
+2025-02-14 20:26:03,012 - root - INFO - Reddit User Agent: python:telegram_reddit_bot:1.0 (by /u/major_sh1za)
+2025-02-14 20:26:03,015 - root - INFO - Список суб-реддитов для поиска: ['Hentai']
+2025-02-14 20:26:03,017 - asyncprawcore - DEBUG - Fetching: GET https://oauth.reddit.com/r/Hentai/hot at 1739546763.0171747
+2025-02-14 20:26:03,018 - asyncprawcore - DEBUG - Data: None
+2025-02-14 20:26:03,019 - asyncprawcore - DEBUG - Params: {'limit': '200', 'raw_json': '1'}
+2025-02-14 20:26:07,647 - asyncprawcore - DEBUG - Response: 200 (100356 bytes) (rst-282:rem-990.0:used-10 ratelimit) at 1739546767.64721
+2025-02-14 20:26:10,301 - asyncprawcore - DEBUG - Fetching: GET https://oauth.reddit.com/r/Hentai/hot at 1739546770.3016229
+2025-02-14 20:26:10,303 - asyncprawcore - DEBUG - Data: None
+2025-02-14 20:26:10,304 - asyncprawcore - DEBUG - Params: {'after': 't3_1ioubuv', 'limit': '200', 'raw_json': '1'}
+2025-02-14 20:26:13,582 - asyncprawcore - DEBUG - Response: 200 (98136 bytes) (rst-277:rem-989.0:used-11 ratelimit) at 1739546773.582806
+2025-02-14 20:26:14,567 - root - INFO - Получено 142 мемов из Hentai
+2025-02-14 20:26:14,568 - root - INFO - Всего собрано мемов: 142
+2025-02-14 20:26:14,568 - root - INFO - Найдено валидных мемов: 142
+2025-02-14 20:26:14,575 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): translate.google.com:443
+2025-02-14 20:26:16,121 - urllib3.connectionpool - DEBUG - https://translate.google.com:443 "GET /m?tl=ru&sl=auto&q=Rover+pressed+against+the+train+window HTTP/11" 200 None
+2025-02-14 20:26:16,462 - root - INFO - ✅ Выбран мем: Ровер прижался к окну поезда из hentai
+2025-02-14 20:26:18,373 - root - ERROR - Ошибка при получении мема: Wrong type of the web page content
+Traceback (most recent call last):
+  File "c:\nsda\Telegrammemebot\bot.py", line 754, in hentai_meme_command
+    await update.message.reply_photo(photo=meme['url'], caption=caption)
+  File "C:\nsda\Telegrammemebot\shiza\lib\site-packages\telegram\_message.py", line 1305, in reply_photo
+    return await self.get_bot().send_photo(
+  File "C:\nsda\Telegrammemebot\shiza\lib\site-packages\telegram\ext\_extbot.py", line 2638, in send_photo
+    return await super().send_photo(
+  File "C:\nsda\Telegrammemebot\shiza\lib\site-packages\telegram\_bot.py", line 334, in decorator
+    result = await func(*args, **kwargs)  # skipcq: PYL-E1102
+  File "C:\nsda\Telegrammemebot\shiza\lib\site-packages\telegram\_bot.py", line 1002, in send_photo
+    return await self._send_message(
+  File "C:\nsda\Telegrammemebot\shiza\lib\site-packages\telegram\ext\_extbot.py", line 488, in _send_message
+    result = await super()._send_message(
+  File "C:\nsda\Telegrammemebot\shiza\lib\site-packages\telegram\_bot.py", line 515, in _send_message
+    result = await self._post(
+  File "C:\nsda\Telegrammemebot\shiza\lib\site-packages\telegram\_bot.py", line 422, in _post
+    return await self._do_post(
+  File "C:\nsda\Telegrammemebot\shiza\lib\site-packages\telegram\ext\_extbot.py", line 306, in _do_post
+    return await super()._do_post(
+  File "C:\nsda\Telegrammemebot\shiza\lib\site-packages\telegram\_bot.py", line 453, in _do_post
+    return await request.post(
+  File "C:\nsda\Telegrammemebot\shiza\lib\site-packages\telegram\request\_baserequest.py", line 165, in post
+    result = await self._request_wrapper(
+  File "C:\nsda\Telegrammemebot\shiza\lib\site-packages\telegram\request\_baserequest.py", line 328, in _request_wrapper
+    raise BadRequest(message)
+telegram.error.BadRequest: Wrong type of the web page content
+2025-02-14 20:26:25,018 - root - INFO - 🚀 Начало процесса получения мема
+2025-02-14 20:26:26,202 - root - INFO - ✅ Успешное SSL-соединение с Reddit
+2025-02-14 20:26:26,203 - root - INFO - Reddit Client ID: 1f0se...
+2025-02-14 20:26:26,204 - root - INFO - Reddit Client Secret: **********
+2025-02-14 20:26:26,204 - root - INFO - Reddit User Agent: python:telegram_reddit_bot:1.0 (by /u/major_sh1za)
+2025-02-14 20:26:26,205 - root - INFO - Список суб-реддитов для поиска: ['Hentai']
+2025-02-14 20:26:26,207 - asyncprawcore - DEBUG - Fetching: GET https://oauth.reddit.com/r/Hentai/hot at 1739546786.2070105
+2025-02-14 20:26:26,208 - asyncprawcore - DEBUG - Data: None
+2025-02-14 20:26:26,208 - asyncprawcore - DEBUG - Params: {'limit': '200', 'raw_json': '1'}
+2025-02-14 20:26:31,114 - asyncprawcore - DEBUG - Response: 200 (100404 bytes) (rst-258:rem-988.0:used-12 ratelimit) at 1739546791.1144042
+2025-02-14 20:26:31,808 - asyncprawcore - DEBUG - Fetching: GET https://oauth.reddit.com/r/Hentai/hot at 1739546791.8088129
+2025-02-14 20:26:31,810 - asyncprawcore - DEBUG - Data: None
+2025-02-14 20:26:31,811 - asyncprawcore - DEBUG - Params: {'after': 't3_1ioubuv', 'limit': '200', 'raw_json': '1'}
+2025-02-14 20:26:34,413 - asyncprawcore - DEBUG - Response: 200 (98091 bytes) (rst-255:rem-987.0:used-13 ratelimit) at 1739546794.4133422
+2025-02-14 20:26:34,941 - root - INFO - Получено 142 мемов из Hentai
+2025-02-14 20:26:34,942 - root - INFO - Всего собрано мемов: 142
+2025-02-14 20:26:34,943 - root - INFO - Найдено валидных мемов: 141
+2025-02-14 20:26:34,949 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): translate.google.com:443
+2025-02-14 20:26:35,893 - urllib3.connectionpool - DEBUG - https://translate.google.com:443 "GET /m?tl=ru&sl=auto&q=Breeding+Firefly HTTP/11" 200 None
+2025-02-14 20:26:37,134 - root - INFO - ✅ Выбран мем: Разведение светлячков из hentai
+2025-02-14 20:26:43,783 - root - INFO - 🚀 Начало процесса получения мема
+2025-02-14 20:26:44,565 - root - INFO - ✅ Успешное SSL-соединение с Reddit
+2025-02-14 20:26:44,567 - root - INFO - Reddit Client ID: 1f0se...
+2025-02-14 20:26:44,568 - root - INFO - Reddit Client Secret: **********
+2025-02-14 20:26:44,568 - root - INFO - Reddit User Agent: python:telegram_reddit_bot:1.0 (by /u/major_sh1za)
+2025-02-14 20:26:44,570 - root - INFO - Список суб-реддитов для поиска: ['Hentai']
+2025-02-14 20:26:44,571 - asyncprawcore - DEBUG - Fetching: GET https://oauth.reddit.com/r/Hentai/hot at 1739546804.5713472
+2025-02-14 20:26:44,572 - asyncprawcore - DEBUG - Data: None
+2025-02-14 20:26:44,573 - asyncprawcore - DEBUG - Params: {'limit': '200', 'raw_json': '1'}
+2025-02-14 20:26:50,625 - asyncprawcore - DEBUG - Response: 200 (100369 bytes) (rst-240:rem-986.0:used-14 ratelimit) at 1739546810.6252875
+2025-02-14 20:26:51,919 - asyncprawcore - DEBUG - Fetching: GET https://oauth.reddit.com/r/Hentai/hot at 1739546811.9197142
+2025-02-14 20:26:51,920 - asyncprawcore - DEBUG - Data: None
+2025-02-14 20:26:51,921 - asyncprawcore - DEBUG - Params: {'after': 't3_1ioubuv', 'limit': '200', 'raw_json': '1'}
+2025-02-14 20:26:54,137 - asyncprawcore - DEBUG - Response: 200 (98169 bytes) (rst-235:rem-985.0:used-15 ratelimit) at 1739546814.1377933
+2025-02-14 20:26:55,085 - root - INFO - Получено 142 мемов из Hentai
+2025-02-14 20:26:55,086 - root - INFO - Всего собрано мемов: 142
+2025-02-14 20:26:55,087 - root - INFO - Найдено валидных мемов: 140
+2025-02-14 20:26:55,094 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): translate.google.com:443
+2025-02-14 20:26:57,020 - urllib3.connectionpool - DEBUG - https://translate.google.com:443 "GET /m?tl=ru&sl=auto&q=Well+that+didn%27t+go+well HTTP/11" 200 None
+2025-02-14 20:26:57,376 - root - INFO - ✅ Выбран мем: Error 500 (Server Error)!!1500.That’s an error.There was an error. Please try again later.That’s all we know. из hentai
+2025-02-14 20:27:04,665 - root - INFO - 🚀 Начало процесса получения мема
+2025-02-14 20:27:05,694 - root - INFO - ✅ Успешное SSL-соединение с Reddit
+2025-02-14 20:27:05,696 - root - INFO - Reddit Client ID: 1f0se...
+2025-02-14 20:27:05,696 - root - INFO - Reddit Client Secret: **********
+2025-02-14 20:27:05,697 - root - INFO - Reddit User Agent: python:telegram_reddit_bot:1.0 (by /u/major_sh1za)
+2025-02-14 20:27:05,699 - root - INFO - Список суб-реддитов для поиска: ['Hentai']
+2025-02-14 20:27:05,700 - asyncprawcore - DEBUG - Fetching: GET https://oauth.reddit.com/r/Hentai/hot at 1739546825.700095
+2025-02-14 20:27:05,701 - asyncprawcore - DEBUG - Data: None
+2025-02-14 20:27:05,702 - asyncprawcore - DEBUG - Params: {'limit': '200', 'raw_json': '1'}
+2025-02-14 20:27:10,594 - asyncprawcore - DEBUG - Response: 200 (100313 bytes) (rst-218:rem-984.0:used-16 ratelimit) at 1739546830.5942414
+2025-02-14 20:27:11,712 - asyncprawcore - DEBUG - Fetching: GET https://oauth.reddit.com/r/Hentai/hot at 1739546831.71215
+2025-02-14 20:27:11,714 - asyncprawcore - DEBUG - Data: None
+2025-02-14 20:27:11,714 - asyncprawcore - DEBUG - Params: {'after': 't3_1ioubuv', 'limit': '200', 'raw_json': '1'}
+2025-02-14 20:27:13,532 - asyncprawcore - DEBUG - Response: 200 (98088 bytes) (rst-215:rem-983.0:used-17 ratelimit) at 1739546833.5310366
+2025-02-14 20:27:14,688 - root - INFO - Получено 142 мемов из Hentai
+2025-02-14 20:27:14,689 - root - INFO - Всего собрано мемов: 142
+2025-02-14 20:27:14,690 - root - INFO - Найдено валидных мемов: 139
+2025-02-14 20:27:14,695 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): translate.google.com:443
+2025-02-14 20:27:15,805 - urllib3.connectionpool - DEBUG - https://translate.google.com:443 "GET /m?tl=ru&sl=auto&q=Artist+blackwhiplash HTTP/11" 200 None
+2025-02-14 20:27:16,294 - root - INFO - ✅ Выбран мем: Error 500 (Server Error)!!1500.That’s an error.There was an error. Please try again later.That’s all we know. из hentai
+2025-02-14 20:27:23,271 - root - INFO - 🚀 Начало процесса получения мема
+2025-02-14 20:27:24,498 - root - INFO - ✅ Успешное SSL-соединение с Reddit
+2025-02-14 20:27:24,500 - root - INFO - Reddit Client ID: 1f0se...
+2025-02-14 20:27:24,500 - root - INFO - Reddit Client Secret: **********
+2025-02-14 20:27:24,501 - root - INFO - Reddit User Agent: python:telegram_reddit_bot:1.0 (by /u/major_sh1za)
+2025-02-14 20:27:24,502 - root - INFO - Список суб-реддитов для поиска: ['Warhammer']
+2025-02-14 20:27:24,504 - asyncprawcore - DEBUG - Fetching: GET https://oauth.reddit.com/r/Warhammer/hot at 1739546844.5044823
+2025-02-14 20:27:24,505 - asyncprawcore - DEBUG - Data: None
+2025-02-14 20:27:24,506 - asyncprawcore - DEBUG - Params: {'limit': '200', 'raw_json': '1'}
+2025-02-14 20:27:28,867 - asyncprawcore - DEBUG - Response: 200 (113542 bytes) (rst-200:rem-982.0:used-18 ratelimit) at 1739546848.867413
+2025-02-14 20:27:30,189 - asyncprawcore - DEBUG - Fetching: GET https://oauth.reddit.com/r/Warhammer/hot at 1739546850.189875
+2025-02-14 20:27:30,191 - asyncprawcore - DEBUG - Data: None
+2025-02-14 20:27:30,192 - asyncprawcore - DEBUG - Params: {'after': 't3_1ioh1xg', 'limit': '200', 'raw_json': '1'}
+2025-02-14 20:27:33,021 - asyncprawcore - DEBUG - Response: 200 (135589 bytes) (rst-197:rem-981.0:used-19 ratelimit) at 1739546853.0211265
+2025-02-14 20:27:34,006 - root - INFO - Получено 57 мемов из Warhammer
+2025-02-14 20:27:34,006 - root - INFO - Всего собрано мемов: 57
+2025-02-14 20:27:34,007 - root - INFO - Найдено валидных мемов: 57
+2025-02-14 20:27:34,013 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): translate.google.com:443
+2025-02-14 20:27:35,140 - urllib3.connectionpool - DEBUG - https://translate.google.com:443 "GET /m?tl=ru&sl=auto&q=LotD+-+Flames+75%25+Done HTTP/11" 200 None
+2025-02-14 20:27:35,566 - root - INFO - ✅ Выбран мем: Error 500 (Server Error)!!1500.That’s an error.There was an error. Please try again later.That’s all we know. из Warhammer
+2025-02-14 20:27:41,443 - root - INFO - 🚀 Начало процесса получения мема
+2025-02-14 20:27:43,445 - root - INFO - ✅ Успешное SSL-соединение с Reddit
+2025-02-14 20:27:43,447 - root - INFO - Reddit Client ID: 1f0se...
+2025-02-14 20:27:43,448 - root - INFO - Reddit Client Secret: **********
+2025-02-14 20:27:43,448 - root - INFO - Reddit User Agent: python:telegram_reddit_bot:1.0 (by /u/major_sh1za)
+2025-02-14 20:27:43,450 - root - INFO - Список суб-реддитов для поиска: ['dota']
+2025-02-14 20:27:43,451 - asyncprawcore - DEBUG - Fetching: GET https://oauth.reddit.com/r/dota/hot at 1739546863.4519267
+2025-02-14 20:27:43,452 - asyncprawcore - DEBUG - Data: None
+2025-02-14 20:27:43,453 - asyncprawcore - DEBUG - Params: {'limit': '200', 'raw_json': '1'}
+2025-02-14 20:27:47,322 - asyncprawcore - DEBUG - Response: 200 (57660 bytes) (rst-182:rem-980.0:used-20 ratelimit) at 1739546867.3229103
+2025-02-14 20:27:48,134 - asyncprawcore - DEBUG - Fetching: GET https://oauth.reddit.com/r/dota/hot at 1739546868.1344051
+2025-02-14 20:27:48,136 - asyncprawcore - DEBUG - Data: None
+2025-02-14 20:27:48,139 - asyncprawcore - DEBUG - Params: {'after': 't3_14ftp66', 'limit': '200', 'raw_json': '1'}
+2025-02-14 20:27:50,219 - asyncprawcore - DEBUG - Response: 200 (52492 bytes) (rst-179:rem-979.0:used-21 ratelimit) at 1739546870.218562
+2025-02-14 20:27:50,541 - root - INFO - Получено 9 мемов из dota
+2025-02-14 20:27:50,542 - root - INFO - Всего собрано мемов: 9
+2025-02-14 20:27:50,543 - root - INFO - Найдено валидных мемов: 9
+2025-02-14 20:27:50,548 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): translate.google.com:443
+2025-02-14 20:27:52,010 - urllib3.connectionpool - DEBUG - https://translate.google.com:443 "GET /m?tl=ru&sl=auto&q=hello+everyone%21%29+it%27s+my+work%21%29+rate+the+work%21 HTTP/11" 200 None
+2025-02-14 20:27:52,414 - root - INFO - ✅ Выбран мем: Error 500 (Server Error)!!1500.That’s an error.There was an error. Please try again later.That’s all we know. из DOTA
+2025-02-14 20:28:04,559 - root - INFO - Запуск отправки мемов...
+2025-02-14 20:28:04,560 - root - INFO - 🚀 Начало процесса получения мема
+2025-02-14 20:28:05,717 - root - INFO - ✅ Успешное SSL-соединение с Reddit
+2025-02-14 20:28:05,719 - root - INFO - Reddit Client ID: 1f0se...
+2025-02-14 20:28:05,719 - root - INFO - Reddit Client Secret: **********
+2025-02-14 20:28:05,720 - root - INFO - Reddit User Agent: python:telegram_reddit_bot:1.0 (by /u/major_sh1za)
+2025-02-14 20:28:05,722 - root - INFO - Список суб-реддитов для поиска: ['memes', 'dankmemes', 'funny', 'ru_memes', 'Pikabu']
+2025-02-14 20:28:05,724 - asyncprawcore - DEBUG - Fetching: GET https://oauth.reddit.com/r/memes/hot at 1739546885.7241242
+2025-02-14 20:28:05,725 - asyncprawcore - DEBUG - Data: None
+2025-02-14 20:28:05,726 - asyncprawcore - DEBUG - Params: {'limit': '200', 'raw_json': '1'}
+2025-02-14 20:28:09,589 - asyncprawcore - DEBUG - Response: 200 (52927 bytes) (rst-159:rem-978.0:used-22 ratelimit) at 1739546889.5892217
+2025-02-14 20:28:10,647 - asyncprawcore - DEBUG - Fetching: GET https://oauth.reddit.com/r/memes/hot at 1739546890.6473866
+2025-02-14 20:28:10,648 - asyncprawcore - DEBUG - Data: None
+2025-02-14 20:28:10,649 - asyncprawcore - DEBUG - Params: {'after': 't3_1iofyny', 'limit': '200', 'raw_json': '1'}
+2025-02-14 20:28:12,494 - asyncprawcore - DEBUG - Response: 200 (54621 bytes) (rst-156:rem-977.0:used-23 ratelimit) at 1739546892.4941978
+2025-02-14 20:28:13,262 - root - INFO - Получено 186 мемов из memes
+2025-02-14 20:28:13,265 - asyncprawcore - DEBUG - Fetching: GET https://oauth.reddit.com/r/dankmemes/hot at 1739546893.265205
+2025-02-14 20:28:13,266 - asyncprawcore - DEBUG - Data: None
+2025-02-14 20:28:13,267 - asyncprawcore - DEBUG - Params: {'limit': '200', 'raw_json': '1'}
+2025-02-14 20:28:14,909 - asyncprawcore - DEBUG - Response: 200 (58319 bytes) (rst-154:rem-976.0:used-24 ratelimit) at 1739546894.9092834
+2025-02-14 20:28:15,511 - asyncprawcore - DEBUG - Fetching: GET https://oauth.reddit.com/r/dankmemes/hot at 1739546895.5110595
+2025-02-14 20:28:15,513 - asyncprawcore - DEBUG - Data: None
+2025-02-14 20:28:15,515 - asyncprawcore - DEBUG - Params: {'after': 't3_1imr3vw', 'limit': '200', 'raw_json': '1'}
+2025-02-14 20:28:16,972 - asyncprawcore - DEBUG - Response: 200 (56848 bytes) (rst-151:rem-975.0:used-25 ratelimit) at 1739546896.9729347
+2025-02-14 20:28:17,349 - root - INFO - Получено 199 мемов из dankmemes
+2025-02-14 20:28:17,350 - asyncprawcore - DEBUG - Fetching: GET https://oauth.reddit.com/r/funny/hot at 1739546897.350573
+2025-02-14 20:28:17,351 - asyncprawcore - DEBUG - Data: None
+2025-02-14 20:28:17,352 - asyncprawcore - DEBUG - Params: {'limit': '200', 'raw_json': '1'}
+2025-02-14 20:28:19,246 - asyncprawcore - DEBUG - Response: 200 (71114 bytes) (rst-150:rem-974.0:used-26 ratelimit) at 1739546899.2461534
+2025-02-14 20:28:20,084 - asyncprawcore - DEBUG - Fetching: GET https://oauth.reddit.com/r/funny/hot at 1739546900.0845933
+2025-02-14 20:28:20,086 - asyncprawcore - DEBUG - Data: None
+2025-02-14 20:28:20,087 - asyncprawcore - DEBUG - Params: {'after': 't3_1imyci4', 'limit': '200', 'raw_json': '1'}
+2025-02-14 20:28:22,371 - asyncprawcore - DEBUG - Response: 200 (67504 bytes) (rst-147:rem-973.0:used-27 ratelimit) at 1739546902.3718066
+2025-02-14 20:28:22,715 - root - INFO - Получено 111 мемов из funny
+2025-02-14 20:28:22,718 - asyncprawcore - DEBUG - Fetching: GET https://oauth.reddit.com/r/ru_memes/hot at 1739546902.7189565
+2025-02-14 20:28:22,719 - asyncprawcore - DEBUG - Data: None
+2025-02-14 20:28:22,719 - asyncprawcore - DEBUG - Params: {'limit': '200', 'raw_json': '1'}
+2025-02-14 20:28:23,306 - asyncprawcore - DEBUG - Response: 200 (9122 bytes) (rst-144:rem-972.0:used-28 ratelimit) at 1739546903.3062232
+2025-02-14 20:28:23,714 - root - INFO - Получено 17 мемов из ru_memes
+2025-02-14 20:28:23,715 - asyncprawcore - DEBUG - Fetching: GET https://oauth.reddit.com/r/Pikabu/hot at 1739546903.7159686
+2025-02-14 20:28:23,716 - asyncprawcore - DEBUG - Data: None
+2025-02-14 20:28:23,716 - asyncprawcore - DEBUG - Params: {'limit': '200', 'raw_json': '1'}
+2025-02-14 20:28:26,855 - asyncprawcore - DEBUG - Response: 200 (105329 bytes) (rst-143:rem-971.0:used-29 ratelimit) at 1739546906.8558455
+2025-02-14 20:28:27,763 - asyncprawcore - DEBUG - Fetching: GET https://oauth.reddit.com/r/Pikabu/hot at 1739546907.7636917
+2025-02-14 20:28:27,765 - asyncprawcore - DEBUG - Data: None
+2025-02-14 20:28:27,767 - asyncprawcore - DEBUG - Params: {'after': 't3_1imzi78', 'limit': '200', 'raw_json': '1'}
+2025-02-14 20:28:30,489 - asyncprawcore - DEBUG - Response: 200 (110267 bytes) (rst-139:rem-970.0:used-30 ratelimit) at 1739546910.489926
+2025-02-14 20:28:31,667 - root - INFO - Получено 79 мемов из Pikabu
+2025-02-14 20:28:31,668 - root - INFO - Всего собрано мемов: 592
+2025-02-14 20:28:31,669 - root - INFO - Найдено валидных мемов: 592
+2025-02-14 20:28:31,675 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): translate.google.com:443
+2025-02-14 20:28:33,237 - urllib3.connectionpool - DEBUG - https://translate.google.com:443 "GET /m?tl=ru&sl=auto&q=She%E2%80%99s+hungry+prolly HTTP/11" 200 None
+2025-02-14 20:28:33,665 - root - INFO - ✅ Выбран мем: Error 500 (Server Error)!!1500.That’s an error.There was an error. Please try again later.That’s all we know. из memes
+2025-02-14 20:28:33,667 - root - INFO - Отправка мема: Error 500 (Server Error)!!1500.That’s an error.There was an error. Please try again later.That’s all we know.
+2025-02-14 20:28:36,589 - root - INFO - Мем отправлен: Error 500 (Server Error)!!1500.That’s an error.There was an error. Please try again later.That’s all we know.

@@ -12,6 +12,9 @@ from datetime import datetime, timedelta
 # Глобальная переменная для отслеживания состояния отправки мемов
 sending_memes = False
 
+# Глобальная переменная для отслеживания состояния выполнения команд
+is_command_running = {}  # Глобальная переменная для отслеживания состояния выполнения команд
+
 # Библиотеки для сетевых запросов
 import aiohttp
 import aiofiles
@@ -268,8 +271,8 @@ async def start_command(update: Update, context: CallbackContext):
     try:
         if update.message.text.startswith('/start'):
             keyboard = [
-                ["/creatememe", "/publishmeme"],
-                ["/help", "/about"]
+                ["/Hentai", "/Warhammer"],
+                ["/Dota"],
             ]
             reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
             await update.message.reply_text("Добро пожаловать! Выберите команду:", reply_markup=reply_markup)
@@ -712,6 +715,101 @@ async def publish_meme_command(update: Update, context: CallbackContext):
         logger.error(f"Ошибка при публикации мема: {e}", exc_info=True)
         await update.message.reply_text("❌ Произошла ошибка при публикации мема.")
 
+async def warhammer_meme_command(update: Update, context: CallbackContext):
+    chat_id = update.effective_chat.id
+    if chat_id in is_command_running and is_command_running[chat_id]:
+        await update.message.reply_text("❌ Команда уже выполняется. Пожалуйста, подождите.")
+        return
+
+    is_command_running[chat_id] = True
+    try:
+        await update.message.reply_text("Подождите минуту...")
+        meme = await get_random_meme(subreddit_names=['Warhammer'])
+        if meme:
+            caption = f"{meme.get('title', 'За Императора?')}\n\nмда, шиз\n@sh1za1337_bot"
+            await update.message.reply_photo(
+                photo=meme['url'],
+                caption=caption
+            )
+        else:
+            await update.message.reply_text("❌ Не удалось получить мем из сабреддита.")
+    except Exception as e:
+        logger.error(f"Ошибка при выполнении команды /warhammer_meme: {e}", exc_info=True)
+        await update.message.reply_text("😱 Произошла ошибка при получении мема.")
+    finally:
+        is_command_running[chat_id] = False
+
+async def hentai_meme_command(update: Update, context: CallbackContext):
+    chat_id = update.effective_chat.id
+    if chat_id in is_command_running and is_command_running[chat_id]:
+        await update.message.reply_text("❌ Команда уже выполняется. Пожалуйста, подождите.")
+        return
+
+    is_command_running[chat_id] = True
+    try:
+        await update.message.reply_text("Сейчас найду для вас самое вкусное...")
+        meme = await get_random_meme(subreddit_names=['Hentai'])
+        if isinstance(meme, dict) and 'url' in meme:
+            caption = f"{meme.get('title', 'Уф, вот это хентай! 😏')}\n\nмда, шиз\n@sh1za1337_bot"
+            await update.message.reply_photo(photo=meme['url'], caption=caption)
+        else:
+            await update.message.reply_text("❌ Не удалось получить мем из сабреддита Hentai.")
+    except Exception as e:
+        logger.error(f"Ошибка при получении мема: {e}", exc_info=True)
+
+        # Удаляем сообщение с ошибкой (если оно было отправлено)
+        try:
+            await update.message.delete()
+        except Exception as delete_error:
+            logger.error(f"Ошибка при удалении сообщения: {delete_error}")
+
+        # Отправляем нейтральное сообщение
+        await update.message.reply_text("Что-то пошло не так. Попробуйте позже!")
+    finally:
+        is_command_running[chat_id] = False
+
+async def dota_meme_command(update: Update, context: CallbackContext):
+    user_id = update.effective_user.id
+    chat_id = update.effective_chat.id
+    if chat_id in is_command_running and is_command_running[chat_id]:
+        await update.message.reply_text("❌ Команда уже выполняется. Пожалуйста, подождите.")
+        return
+
+    is_command_running[chat_id] = True
+    try:
+        await update.message.reply_text("Подождите минуту...")
+        meme = await get_random_meme(subreddit_names=['dota'])
+        if meme:
+            caption = f"{meme.get('title', '5 мажоров выйграл?')}\n\nмда, шиз\n@sh1za1337_bot"  # Описание для Dota
+            try:
+                await update.message.reply_photo(
+                    photo=meme['url'],
+                    caption=caption
+                )
+            except Exception as e:
+                logger.error(f"Ошибка при отправке фото: {e}", exc_info=True)
+                if update.message:
+                    await update.message.delete()
+                await update.message.reply_text("Что-то пошло не так. Попробуйте позже!")
+        else:
+            await update.message.reply_text("❌ Не удалось получить мем из сабреддита Dota.")
+    except Exception as e:
+        logger.error(f"Ошибка при получении мема: {e}", exc_info=True)
+        if update.message:
+            try:
+                await update.message.delete()
+            except Exception as delete_error:
+                logger.error(f"Ошибка при удалении сообщения: {delete_error}", exc_info=True)
+        await update.message.reply_text("Что-то пошло не так. Попробуйте позже!")
+    finally:
+        is_command_running[chat_id] = False
+
+async def reff_command(update: Update, context: CallbackContext):
+    pass
+
+import textwrap
+from PIL import Image, ImageDraw, ImageFont
+
 def create_demotivator(image_path, text, output_path):
     # Загружаем изображение
     image = Image.open(image_path)
@@ -748,9 +846,6 @@ def create_demotivator(image_path, text, output_path):
     # Сохраняем демотиватор
     demotivator.save(output_path)
 
-import textwrap
-from PIL import Image, ImageDraw, ImageFont
-
 def main():
     logger.info("🤖 Инициализация бота...")
     if not TELEGRAM_TOKEN:
@@ -782,6 +877,10 @@ def main():
     # Добавляем обработчик для публикации мема
     application.add_handler(CommandHandler('publishmeme', publish_meme_command))
     
+    application.add_handler(CommandHandler('hentai', hentai_meme_command))
+    application.add_handler(CommandHandler('warhammer', warhammer_meme_command))
+    application.add_handler(CommandHandler('dota', dota_meme_command))
+
     application.add_error_handler(error_handler)
     logger.info("🚀 Начало polling...")
     application.run_polling(
